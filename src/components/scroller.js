@@ -5,12 +5,6 @@ const LEFT_RESIZE = 1;
 const RIGHT_RESIZE = 2;
 const MOVE = 3;
 
-const renderChart = (data, color, target) => {
-    const line = createChart(color);
-    line.setAttributeNS(null, "points", mapPoints(data, window.innerWidth, 50));
-    target.append(line);
-};
-
 // TODO: Refactor VERY HEAVILY
 class Scroller {
     notify(state) {

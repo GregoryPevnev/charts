@@ -2,13 +2,23 @@
     background: #2c3e50;
     color: white;
 
-    .line {
+    .line,
+    .pointer {
         stroke: $night-secondary;
     }
 
     .label {
         fill: $night-primary;
         font-size: 1.3rem;
+    }
+
+    .popup {
+        fill: $night-secondary;
+        color: white;
+    }
+
+    .popup__title {
+        fill: white;
     }
 
     .shadow {

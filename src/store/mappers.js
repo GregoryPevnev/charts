@@ -1,22 +1,29 @@
-import formatDate from "../services/dates";
+import { formatDate, formatFullDate } from "../services/dates";
+
+// TODO: Refactor some parts into services
+const toPercent = (at, min, max) => (at - min) / (max - min);
 
 export const createRecordGetter = store => {
     const cache = {};
 
     return () => {
         const {
-            data: { results, labels, colors },
+            data: { results, labels, colors, times },
             selected
         } = store.state();
 
         if (selected === null) return null;
 
-        if (!cache[selected])
-            cache[selected] = results[selected].values.map((v, i) => ({
+        if (!cache[selected]) {
+            const data = results[selected].values.map((v, i) => ({
                 value: v,
                 label: labels[i],
                 color: colors[i]
             }));
+            const at = toPercent(selected, times[0], times[times.length - 1]);
+            cache[selected] = { data, at, title: formatFullDate(selected) };
+        }
+
         return cache[selected];
     };
 };
@@ -44,8 +51,6 @@ export const createMaxGetter = store => {
         return cache[s];
     };
 };
-
-const toPercent = (at, min, max) => (at - min) / (max - min);
 
 // TODO: Refactor to use sub-funcitons instead of DI-Functions (Just separate certain logic)
 export const createRangeGetter = (store, getMax) => (myFrom = undefined, myTo = undefined) => {

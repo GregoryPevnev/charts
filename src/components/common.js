@@ -1,6 +1,11 @@
 const ANIMATION_DURATION = "0.2s";
 const NS = "http://www.w3.org/2000/svg";
 
+export const mapPoints = (marks, x, y) =>
+    Array.from(marks)
+        .map(({ value, at }) => `${x * at} ${y * (1 - value)}`)
+        .join(",");
+
 export const createSVG = (height = "100%") => {
     const graph = document.createElementNS(NS, "svg");
     graph.setAttributeNS(null, "height", height);
@@ -14,11 +19,6 @@ export const createChart = color => {
     return line;
 };
 
-export const mapPoints = (marks, x, y) =>
-    Array.from(marks)
-        .map(({ value, at }) => `${x * at} ${y * (1 - value)}`)
-        .join(",");
-
 export const createGroup = (className = null) => {
     const group = document.createElementNS(NS, "g");
     if (className !== null) group.setAttributeNS(null, "class", className);
@@ -27,17 +27,27 @@ export const createGroup = (className = null) => {
 
 export const createLine = y => {
     const line = document.createElementNS(NS, "line");
-    line.setAttributeNS(null, "x1", 0);
+    line.setAttributeNS(null, "x1", "0%");
     line.setAttributeNS(null, "x2", "100%");
     line.setAttributeNS(null, "y1", y);
     line.setAttributeNS(null, "y2", y);
     return line;
 };
 
+export const createPointer = () => {
+    const line = document.createElementNS(NS, "line");
+    line.setAttributeNS(null, "x1", 0);
+    line.setAttributeNS(null, "x2", 0);
+    line.setAttributeNS(null, "y1", "0%");
+    line.setAttributeNS(null, "y2", "100%");
+    line.classList.add("pointer");
+    return line;
+};
+
 export const createLabel = (x, y) => {
     const label = document.createElementNS(NS, "text");
     label.setAttributeNS(null, "x", x);
-    label.setAttributeNS(null, "y", y); // STATIC
+    label.setAttributeNS(null, "y", y);
     return label;
 };
 
@@ -73,4 +83,15 @@ export const createCheck = (content, color) => {
     label.append(text);
 
     return label;
+};
+
+export const createRect = (x, y, width, height) => {
+    const rect = document.createElementNS(NS, "rect");
+
+    rect.setAttributeNS(null, "x", x);
+    rect.setAttributeNS(null, "y", y);
+    rect.setAttributeNS(null, "width", width);
+    rect.setAttributeNS(null, "height", height);
+
+    return rect;
 };

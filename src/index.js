@@ -24,11 +24,13 @@ charts.forEach(chart => graph.addChart(chart));
 state.listen(() => {
     const active = getActive(),
         offset = getOffset();
+    const record = getRecord();
 
     graph.change(getRange(), active);
     graph.scroll(offset);
     graph.showScales(getMax());
     graph.showLabels(loadDates());
+    graph.showDetails(record);
     scroller.setWindow(offset, offset + active);
     checks.setStates(getCheckers().map(({ state }) => state));
     controller.setValues(loadFull());
@@ -62,6 +64,16 @@ checks.onChange(i => {
     const states = state.state().states;
     const newStates = [...states.slice(0, i), !states[i], ...states.slice(i + 1)];
     state.mutate({ states: newStates });
+});
+
+graph.onSelection(at => {
+    const {
+        data: { times }
+    } = state.state();
+
+    const selected = at ? times[Math.floor(times.length * at)] : null;
+
+    state.mutate({ selected });
 });
 
 // TODO: Separate

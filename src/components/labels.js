@@ -14,6 +14,7 @@ class Labels {
             const position = (100 / dates.length) * i + "%";
             const label = createLabel(position, HEIGHT);
             label.textContent = date;
+            label.classList.add("date");
             this.group.appendChild(label);
         });
     }
