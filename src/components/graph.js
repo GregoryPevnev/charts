@@ -98,7 +98,7 @@ class DynamicGraph extends Graph {
     change(data, width) {
         this.width = window.innerWidth / width;
         this.graph.setAttributeNS(null, "width", this.width);
-        this.charts.forEach((chart, i) => chart.change(data[i], this.width));
+        this.charts.forEach((chart, i) => chart.change(data[i].values, this.width));
     }
 
     scroll(offset) {

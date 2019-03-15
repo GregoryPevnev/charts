@@ -1,118 +1,69 @@
 import { formatDate, formatFullDate } from "../services/dates";
+import { toPercent } from "../services/scaling";
 
-// TODO: Refactor some parts into services
-const toPercent = (at, min, max) => (at - min) / (max - min);
+// TODO: Optimize + Cache + Save memory + Think about pre-computing data beforehand (ONLY performing data-mapping once for each operation) -> AFTER EVERYTHING IS DONE
 
-export const createRecordGetter = store => {
+const getMaxFinder = () => {
     const cache = {};
 
-    return () => {
-        const {
-            data: { results, labels, colors, times },
-            selected
-        } = store.state();
-
-        if (selected === null) return null;
-
-        if (!cache[selected]) {
-            const data = results[selected].values.map((v, i) => ({
-                value: v,
-                label: labels[i],
-                color: colors[i]
-            }));
-            const at = toPercent(selected, times[0], times[times.length - 1]);
-            cache[selected] = { data, at, title: formatFullDate(selected) };
-        }
-
-        return cache[selected];
-    };
-};
-
-export const createMaxGetter = store => {
-    const cache = {};
-
-    const sign = (from, to) => `${from}:::${to}`;
-
-    return (myFrom = undefined, myTo = undefined) => {
-        const {
-            data: { results, times },
-            from,
-            to
-        } = store.state();
-
-        const curFrom = myFrom == undefined ? from : myFrom,
-            curTo = myTo == undefined ? to : myTo;
-
-        const s = sign(curFrom, curTo);
+    return (list, from, to, states) => {
+        const s = `${from}:::${to}:::${states.join(",")}`;
         if (!cache[s])
-            cache[s] = times
-                .slice(curFrom, curTo + 1) // INCLUDE FINAL ELEMENT
-                .reduce((max, stamp) => Math.max(max, results[stamp].max), 0);
+            cache[s] = Math.max(
+                ...list
+                    .filter((_, i) => states[i])
+                    .map(({ values }) => Math.max(...values.slice(from, to + 1).map(({ value }) => value)))
+            );
         return cache[s];
     };
 };
 
-// TODO: Refactor to use sub-funcitons instead of DI-Functions (Just separate certain logic)
-export const createRangeGetter = (store, getMax) => (myFrom = undefined, myTo = undefined) => {
-    const {
-        data: { types, times, results },
-        states
-    } = store.state();
-    // console.log(myFrom, myTo);
-    const max = getMax(myFrom, myTo);
+const getRange = ({ myFrom, myTo }, { times, from, to }) => {
+    const currentFrom = myFrom == undefined ? from : myFrom,
+        currentTo = myTo == undefined ? to : myTo;
+    const max = times.length - 1;
 
-    return times.reduce(
-        (mapped, stamp) =>
-            mapped.map((arr, i) => [
-                ...arr,
-                {
-                    value: results[stamp].values[i] / max + (states[i] ? 0 : 1),
-                    at: toPercent(stamp, times[0], times[times.length - 1])
-                }
-            ]),
-        types.map(() => []) // Pre-Compute arrays
-    );
+    return { from: Math.round(currentFrom * max), to: Math.round(currentTo * max) };
 };
 
-// TODO: Refactor + Caching / Pre-Computing
-export const createLoadFull = (store, getRange) => () => {
-    const {
-        data: { times, colors }
-    } = store.state();
+const findMax = getMaxFinder();
 
-    return getRange(0, times.length - 1).map((data, i) => ({ data, color: colors[i] }));
+export const createRecordGetter = store => () => {
+    const { records, selected, times } = store.state();
+
+    if (selected === null) return null;
+
+    const at = toPercent(selected, times[0], times[times.length - 1]);
+    return { data: records[selected], at, title: formatFullDate(selected) };
 };
 
-// TODO: Optimize + Cache + Save memory + Think about pre-computing data beforehand (ONLY performing data-mapping once for each operation) -> AFTER EVERYTHING IS DONE
+// TODO: Refactor defaults (With Use-Cases in application) -> Embed max into response if possible
+// TODO: Create a separate method for Full-List if needed
+export const createMaxGetter = store => (myFrom = undefined, myTo = undefined) => {
+    const state = store.state();
+    const { from, to } = getRange({ myFrom, myTo }, state);
 
-export const createActiveGetter = store => () => {
-    const { to, from, data } = store.state();
-    return (to - from + 1) / data.times.length;
+    return findMax(state.list, from, to, state.states);
 };
 
-export const createOffsetGetter = store => () => {
-    const { from, data } = store.state();
-    return from / data.times.length;
-};
+export const createRangeLoader = store => (myFrom = undefined, myTo = undefined) => {
+    const { list, states } = store.state();
+    const { from, to } = getRange({ myFrom, myTo }, store.state());
 
-export const createCheckerGetter = store => () => {
-    const {
-        data: { labels, colors },
-        states
-    } = store.state();
+    const max = findMax(list, from, to, states);
 
-    return labels.map((label, i) => ({ label, color: colors[i], state: states[i] }));
+    return list.map((item, i) => ({
+        ...item,
+        // TODO: Refactor
+        values: item.values.map(({ value, at }) => ({ at, value: states[i] ? value / max : 1.5 })) // 150% -> Invisible
+        // TODO: Refactor invisible if needed (property / not shown / etc.)
+    }));
 };
 
 const DAY_DIFF = 6;
-
 export const createDatesLoader = store => () => {
-    const {
-        to,
-        from,
-        data: { times }
-    } = store.state();
+    const { to, from, times } = store.state();
 
-    const diff = Math.floor((from - to) / DAY_DIFF);
+    const diff = Math.floor(((to - from) * times.length) / DAY_DIFF);
     return times.filter((_, i) => i % diff == 0).map(formatDate);
 };

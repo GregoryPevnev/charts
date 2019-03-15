@@ -16,7 +16,7 @@ class Controller {
 
     setValues(data) {
         // TODO: Optimize re-rendering
-        this.graph.setValues(data.map(d => d.data));
+        this.graph.setValues(data.map(d => d.values));
     }
 
     render(parent) {

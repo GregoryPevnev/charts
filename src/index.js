@@ -1,61 +1,57 @@
 import { getGraph } from "./components/graph";
 import { getChart } from "./components/chart";
-import state, { getRange, getActive, getOffset, getRecord, getMax, getCheckers, loadDates, loadFull } from "./store";
+import state, { loadItems, getRecord, getMax, loadDates, MIN_GAP } from "./store";
 import getController from "./components/control";
 import { getChecks } from "./components/checks";
 
 // TODO: This whole mess needs refactoring
 
-let isNight = true; // TODO: Definately refactor / Separate
+let isNight = true; // TODO: REPLACE WITH STATE
 
 const app = document.getElementById("app");
 const page = document.querySelector("body");
 const button = document.querySelector(".btn");
 
 const graph = getGraph();
-const controller = getController(loadFull());
+const controller = getController(state.state().list);
 const scroller = controller.getScroller();
-const charts = state.state().data.types.map((_, i) => getChart(state.state().data.colors[i]));
-const checks = getChecks(getCheckers());
+const charts = state.state().list.map(({ color }) => getChart(color));
+const checks = getChecks(state.state().list);
 charts.forEach(chart => graph.addChart(chart));
 
 state.listen(() => {
-    const active = getActive(),
-        offset = getOffset();
+    const { from, to } = state.state();
     const record = getRecord();
+    const max = getMax();
 
-    graph.change(getRange(), active);
-    graph.scroll(offset);
-    graph.showScales(getMax());
+    graph.change(loadItems(), to - from);
+    graph.scroll(from);
+    graph.showScales(max);
     graph.showLabels(loadDates());
     graph.showDetails(record);
-    scroller.setWindow(offset, offset + active);
-    checks.setStates(getCheckers().map(({ state }) => state));
-    controller.setValues(loadFull());
+    scroller.setWindow(from, to);
+    checks.setStates(state.state().states);
+
+    // TODO: Think about refactoring into a standalon metyhod for better querying
+    controller.setValues(loadItems(0, state.state().list.length));
 });
 
 scroller.onChange(({ from, to }) => {
     const currentState = state.state(); // Taking array-indexing into account
-    const size = currentState.data.times.length - 1;
 
-    const newFrom = from ? Math.max(0, size * from) : currentState.from,
-        newTo = to ? Math.min(size, size * to) : currentState.to;
+    // TODO: Constants for percentage
+    const newFrom = from ? Math.max(0, from) : currentState.from,
+        newTo = to ? Math.min(1, to) : currentState.to;
 
-    if (newTo - newFrom >= 6) state.mutate({ from: newFrom, to: newTo });
+    if (newTo - newFrom > MIN_GAP) state.mutate({ from: newFrom, to: newTo });
 });
 
-// TODO: Global Refactoring - Replace "from" and "to" with percentage (Translate to indexes)
 scroller.onPosition(diff => {
-    const {
-        data: { times },
-        from,
-        to
-    } = state.state();
-    const indexDiff = times.length * diff;
-    const newFrom = from + indexDiff,
-        newTo = to + indexDiff;
+    const { from, to } = state.state();
+    const newFrom = from + diff,
+        newTo = to + diff;
 
-    if (newTo <= times.length - 1 && newFrom >= 0 && newTo - newFrom >= 6) state.mutate({ from: newFrom, to: newTo });
+    if (newTo <= 1 && newFrom >= 0) state.mutate({ from: newFrom, to: newTo });
 });
 
 checks.onChange(i => {
@@ -65,9 +61,7 @@ checks.onChange(i => {
 });
 
 graph.onSelection(at => {
-    const {
-        data: { times }
-    } = state.state();
+    const { times } = state.state();
 
     const selected = at ? times[Math.floor(times.length * at)] : null;
 
