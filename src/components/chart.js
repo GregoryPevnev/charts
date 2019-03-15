@@ -1,9 +1,21 @@
-import { createAnimation, createChart, mapPoints } from "./common";
+import { createAnimation, createChart, createPoint } from "./common";
 import { HEIGHT } from "./values";
 
 class Chart {
+    mapPoint({ value, at }) {
+        return {
+            x: this.WIDTH * at,
+            y: this.HEIGHT * (value === -1 ? -0.5 : 1 - value) // -50% -> Off-screen
+        };
+    }
+
     mapPoints(marks) {
-        return mapPoints(marks, this.WIDTH, this.HEIGHT);
+        return Array.from(marks)
+            .map(v => {
+                const { x, y } = this.mapPoint(v);
+                return `${x} ${y}`;
+            })
+            .join(",");
     }
 
     transition(oldPoints, newPoints) {
@@ -15,12 +27,13 @@ class Chart {
         setTimeout(() => this.chart.setAttributeNS(null, "points", newPoints), 150);
     }
 
-    constructor(HEIGHT, chart, state) {
+    constructor(HEIGHT, chart, state, point) {
         this.WIDTH = 0;
         this.HEIGHT = HEIGHT;
         this.chart = chart; // Polyline
         this.state = state; // Animate
         this.values = null; // Previous Values
+        this.selected = point; // Point
     }
 
     change(values, width) {
@@ -33,17 +46,33 @@ class Chart {
         // Note: Rising from the bottom does not work
     }
 
+    setSelected(at) {
+        if (at) {
+            const pos = this.values.find(v => v.at === at);
+            const { x, y } = this.mapPoint(pos);
+
+            this.selected.setAttributeNS(null, "cx", x);
+            this.selected.setAttributeNS(null, "cy", y);
+        } else {
+            this.selected.setAttributeNS(null, "cx", -5);
+            this.selected.setAttributeNS(null, "cy", -5);
+        }
+    }
+
     render(target) {
-        target.appendChild(this.chart);
+        target.append(this.chart);
+        target.append(this.selected);
     }
 }
 
 export const getChart = (color, height = undefined) => {
     const line = createChart(color);
     const animate = createAnimation("points");
+    const point = createPoint(color);
+
     line.appendChild(animate);
 
-    const chart = new Chart(height || HEIGHT, line, animate);
+    const chart = new Chart(height || HEIGHT, line, animate, point);
 
     return chart;
 };

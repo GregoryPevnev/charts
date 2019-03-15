@@ -1,11 +1,6 @@
 const ANIMATION_DURATION = "0.2s";
 const NS = "http://www.w3.org/2000/svg";
 
-export const mapPoints = (marks, x, y) =>
-    Array.from(marks)
-        .map(({ value, at }) => `${x * at} ${y * (value === -1 ? -0.5 : 1 - value)}`) // -50% -> Off-screen
-        .join(",");
-
 export const createSVG = (height = "100%") => {
     const graph = document.createElementNS(NS, "svg");
     graph.setAttributeNS(null, "height", height);
@@ -32,6 +27,16 @@ export const createLine = y => {
     line.setAttributeNS(null, "y1", y);
     line.setAttributeNS(null, "y2", y);
     return line;
+};
+
+export const createPoint = color => {
+    const point = document.createElementNS(NS, "circle");
+    point.setAttributeNS(null, "r", 5);
+    point.setAttributeNS(null, "cx", -5);
+    point.setAttributeNS(null, "cy", -5);
+    point.setAttributeNS(null, "stroke", color);
+    point.classList.add("point");
+    return point;
 };
 
 export const createPointer = () => {

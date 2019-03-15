@@ -1,5 +1,6 @@
+// TODO: REALLY FUCKING STRONG REFACTORING
 .night {
-    background: #2c3e50;
+    background: $dark;
     color: white;
 
     .line,
@@ -29,5 +30,9 @@
     }
     .draggable > div {
         background: rgba($night-primary, 0.8);
+    }
+
+    .point {
+        fill: $dark;
     }
 }

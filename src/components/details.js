@@ -1,13 +1,14 @@
 import { createLabel, createGroup, createRect, createSVG } from "./common";
 
-// TODO: Come up with a formula
+export const DETAIL_WIDTH = 120;
+export const DETAIL_HEIGHT = 60;
+
 const computeFontSize = text => {
     if (text.length < 5) return "1.3rem";
     if (text.length < 10) return "1.1rem";
     return "0.9rem";
 };
 
-// TODO: Better rendering
 const renderLabel = ({ value, label, color }, x, y, target) => {
     const wrapper = createGroup();
     const number = createLabel(x, y);
@@ -34,14 +35,21 @@ class DetailsPopup {
     }
 
     setData(at, title, data) {
+        const HEIGHT = Math.ceil(data.length / 2) * 20 + DETAIL_HEIGHT; // Ceil -> Increasing width for even
+
         this.popup.style.visibility = "visible";
-        this.popup.setAttributeNS(null, "x", at - 60); // Subtracting half of width
-        this.wrapper.setAttributeNS(null, "height", Math.floor(data.length / 2) * 20 + 60);
+        this.popup.setAttributeNS(null, "x", at);
+        this.wrapper.setAttributeNS(null, "height", HEIGHT);
         this.title.textContent = title;
         this.labels.innerHTML = "";
 
+        // TODO: Better formulas and rendering
         // TODO: Caching / Preventing rendering (Only changing text -> No re-rendering)
-        data.forEach((item, i) => renderLabel(item, (i % 2) * 60 + 10, Math.floor(i / 2) * 35 + 40, this.labels));
+        data.forEach((item, i) => {
+            const X = (i % 2) * 60 + 10;
+            const Y = Math.floor(i / 2) * 35 + 40; // Floor -> Only moving when the row is full
+            renderLabel(item, X, Y, this.labels);
+        });
     }
 
     hide() {
@@ -53,10 +61,9 @@ class DetailsPopup {
     }
 }
 
-// TODO: Refactor into smaller functions
 export const getPopup = () => {
     const svg = createSVG("100%");
-    const rect = createRect(0, 0, 120, 60);
+    const rect = createRect(0, 0, DETAIL_WIDTH, DETAIL_HEIGHT);
     const title = createLabel(0, 0);
     const labels = createGroup();
 

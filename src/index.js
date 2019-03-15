@@ -62,7 +62,7 @@ checks.onChange(i => {
 graph.onSelection(at => {
     const { times } = state.state();
 
-    const selected = at ? times[Math.floor(times.length * at)] : null;
+    const selected = at ? times[Math.max(0, Math.round(times.length * at) - 1)] : null;
 
     state.mutate({ selected });
 });
@@ -74,3 +74,5 @@ controller.render(app);
 checks.render(app);
 
 state.mutate();
+
+window.onresize = () => state.mutate();

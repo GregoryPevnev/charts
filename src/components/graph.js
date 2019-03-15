@@ -2,7 +2,7 @@ import { createGroup, createSVG, createContainer, createPointer } from "./common
 import { HEIGHT } from "./values";
 import { getLabels } from "./labels";
 import { getScales } from "./scales";
-import { getPopup } from "./details";
+import { getPopup, DETAIL_WIDTH } from "./details";
 
 // TODO: Optimizations, Re-rendering, etc.
 
@@ -10,12 +10,16 @@ import { getPopup } from "./details";
 const filters = `<filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2" /></filter>`;
 
 class Graph {
+    getVisibleWidth() {
+        return this.graph.getBoundingClientRect().width;
+    }
+
     constructor(graph, charts, points) {
         this.charts = [];
         this.points = [];
 
         this.graph = graph;
-        this.width = window.innerWidth;
+        this.width = this.getVisibleWidth();
         this.chartGroup = charts;
         this.pointsGroup = points;
     }
@@ -31,7 +35,7 @@ class Graph {
     }
 
     setValues(data) {
-        this.charts.forEach((chart, i) => chart.change(data[i], window.innerWidth));
+        this.charts.forEach((chart, i) => chart.change(data[i], this.getVisibleWidth()));
     }
 
     render(parent) {
@@ -45,6 +49,20 @@ class DynamicGraph extends Graph {
         this.listeners.forEach(l => l(value));
     }
 
+    getOffset() {
+        return this.cont.scrollLeft;
+    }
+
+    getDetailPosition(at) {
+        const UNIT = DETAIL_WIDTH / 2;
+        const pos = this.width * at;
+        const relPos = pos - this.getOffset();
+
+        if (relPos <= UNIT) return pos;
+        if (this.cont.getBoundingClientRect().width - relPos <= UNIT) return pos - DETAIL_WIDTH;
+        return pos - UNIT;
+    }
+
     setPointer(x) {
         this.pointer.setAttributeNS(null, "x1", x);
         this.pointer.setAttributeNS(null, "x2", x);
@@ -52,7 +70,7 @@ class DynamicGraph extends Graph {
 
     initialize() {
         this.cont.addEventListener("mousemove", e => {
-            const position = this.cont.scrollLeft + e.x;
+            const position = this.getOffset() + e.x - this.cont.getBoundingClientRect().left;
             this.setPointer(position);
             this.notify(position / this.width);
         });
@@ -79,11 +97,12 @@ class DynamicGraph extends Graph {
 
     showDetails(record) {
         if (record) {
-            const { at, title, data } = record;
-            const pos = this.width * at;
-            this.popup.setData(pos, title, data);
+            const { at, title, data, states } = record;
+            this.popup.setData(this.getDetailPosition(at), title, data.filter((_, i) => states[i]));
+            this.charts.forEach(chart => chart.setSelected(at));
         } else {
             this.popup.hide();
+            this.charts.forEach(chart => chart.setSelected(null));
         }
     }
 
@@ -96,7 +115,7 @@ class DynamicGraph extends Graph {
     }
 
     change(data, width) {
-        this.width = window.innerWidth / width;
+        this.width = this.cont.getBoundingClientRect().width / width;
         this.graph.setAttributeNS(null, "width", this.width);
         this.charts.forEach((chart, i) => chart.change(data[i].values, this.width));
     }

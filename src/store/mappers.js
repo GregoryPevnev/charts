@@ -40,12 +40,12 @@ const mapItems = state => {
 // Mappers
 
 export const createRecordGetter = store => () => {
-    const { records, selected, times } = store.state();
+    const { records, selected, times, states } = store.state();
 
     if (selected === null) return null;
 
     const at = toPercent(selected, times[0], times[times.length - 1]);
-    return { data: records[selected], at, title: formatFullDate(selected) };
+    return { data: records[selected], at, title: formatFullDate(selected), states };
 };
 
 export const createMaxGetter = store => () => findMax(store.state());

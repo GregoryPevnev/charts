@@ -1,6 +1,8 @@
 import { HEIGHT } from "./values";
 import { createGroup, createLabel } from "./common";
 
+const EXTRA = 5;
+
 class Labels {
     constructor(group) {
         this.group = group;
@@ -11,8 +13,8 @@ class Labels {
         this.group.innerHTML = "";
 
         dates.forEach((date, i) => {
-            const position = (100 / dates.length) * i + "%";
-            const label = createLabel(position, HEIGHT);
+            const position = (100 / dates.length) * i + "%"; // TODO: Replace with pixels
+            const label = createLabel(position, HEIGHT - EXTRA);
             label.textContent = date;
             label.classList.add("date");
             this.group.appendChild(label);

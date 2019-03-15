@@ -2,9 +2,10 @@ import getState from "./state";
 import loadData from "./loaders";
 import { createRecordGetter, createDatesLoader, createMaxGetter, createRangeLoader, createFullLoader } from "./mappers";
 
-export const MIN_GAP = 0.1; // TODO: DI
+// 5%
+export const MIN_GAP = 0.05; // TODO: DI
 
-const data = loadData(require("../../chart_data.json")[4]);
+const data = loadData(require("../../chart_data.json")[0]);
 
 const store = getState({
     ...data,
