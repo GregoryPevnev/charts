@@ -1,5 +1,5 @@
 import getState from "./state";
-import loadData from "./loader";
+import loadData from "./loaders";
 import {
     createRecordGetter,
     createRangeGetter,

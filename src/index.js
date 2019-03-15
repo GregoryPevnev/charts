@@ -1,10 +1,8 @@
 import { getGraph } from "./components/graph";
 import { getChart } from "./components/chart";
-import state, { getRange, getActive, getOffset, getRecord, getMax } from "./store";
-import { loadDates, loadFull } from "./store";
+import state, { getRange, getActive, getOffset, getRecord, getMax, getCheckers, loadDates, loadFull } from "./store";
 import getController from "./components/control";
 import { getChecks } from "./components/checks";
-import { getCheckers } from "./store";
 
 // TODO: This whole mess needs refactoring
 
