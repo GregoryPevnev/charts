@@ -3,7 +3,7 @@ const NS = "http://www.w3.org/2000/svg";
 
 export const mapPoints = (marks, x, y) =>
     Array.from(marks)
-        .map(({ value, at }) => `${x * at} ${y * (1 - value)}`)
+        .map(({ value, at }) => `${x * at} ${y * (value === -1 ? -0.5 : 1 - value)}`) // -50% -> Off-screen
         .join(",");
 
 export const createSVG = (height = "100%") => {

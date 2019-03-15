@@ -1,39 +1,38 @@
 import { getGraph } from "./components/graph";
 import { getChart } from "./components/chart";
-import state, { loadItems, getRecord, getMax, loadDates, MIN_GAP } from "./store";
+import state, { loadRange, loadAll, getRecord, getMax, loadDates, MIN_GAP } from "./store";
 import getController from "./components/control";
 import { getChecks } from "./components/checks";
+import { getSwitchButton } from "./components/nightBtn";
 
-// TODO: This whole mess needs refactoring
-
-let isNight = true; // TODO: REPLACE WITH STATE
+// TODO: Separate in the end (Main / DI / etc.)
 
 const app = document.getElementById("app");
-const page = document.querySelector("body");
-const button = document.querySelector(".btn");
 
+const all = loadAll();
+
+const button = getSwitchButton();
 const graph = getGraph();
-const controller = getController(state.state().list);
+const controller = getController(all);
 const scroller = controller.getScroller();
-const charts = state.state().list.map(({ color }) => getChart(color));
-const checks = getChecks(state.state().list);
+const charts = all.map(({ color }) => getChart(color));
+const checks = getChecks(all);
 charts.forEach(chart => graph.addChart(chart));
 
 state.listen(() => {
-    const { from, to } = state.state();
+    const { from, to, isNight } = state.state();
     const record = getRecord();
     const max = getMax();
 
-    graph.change(loadItems(), to - from);
+    graph.change(loadRange(), to - from);
     graph.scroll(from);
     graph.showScales(max);
     graph.showLabels(loadDates());
     graph.showDetails(record);
     scroller.setWindow(from, to);
     checks.setStates(state.state().states);
-
-    // TODO: Think about refactoring into a standalon metyhod for better querying
-    controller.setValues(loadItems(0, state.state().list.length));
+    button.switchMode(isNight);
+    controller.setValues(loadAll());
 });
 
 scroller.onChange(({ from, to }) => {
@@ -68,23 +67,10 @@ graph.onSelection(at => {
     state.mutate({ selected });
 });
 
-// TODO: Separate
-const switchMode = () => {
-    isNight = !isNight;
-    if (isNight) {
-        page.classList.add("night");
-        button.textContent = "Switch to Day Mode";
-    } else {
-        page.classList.remove("night");
-        button.textContent = "Switch to Night Mode";
-    }
-};
-button.addEventListener("click", switchMode);
+button.onSwitch(() => state.mutate({ isNight: !state.state().isNight }));
 
 graph.render(app);
 controller.render(app);
 checks.render(app);
 
 state.mutate();
-
-switchMode();

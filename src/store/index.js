@@ -1,13 +1,6 @@
 import getState from "./state";
 import loadData from "./loaders";
-import {
-    createRecordGetter,
-    createOffsetGetter,
-    createActiveGetter,
-    createDatesLoader,
-    createMaxGetter,
-    createRangeLoader
-} from "./mappers";
+import { createRecordGetter, createDatesLoader, createMaxGetter, createRangeLoader, createFullLoader } from "./mappers";
 
 export const MIN_GAP = 0.1; // TODO: DI
 
@@ -25,6 +18,7 @@ const store = getState({
 export const getRecord = createRecordGetter(store);
 export const getMax = createMaxGetter(store);
 export const loadDates = createDatesLoader(store);
-export const loadItems = createRangeLoader(store);
+export const loadRange = createRangeLoader(store);
+export const loadAll = createFullLoader(store);
 
 export default store;
