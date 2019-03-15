@@ -52,7 +52,7 @@ class DynamicGraph extends Graph {
 
     initialize() {
         this.cont.addEventListener("mousemove", e => {
-            const position = this.width - (window.innerWidth - e.x);
+            const position = this.cont.scrollLeft + e.x;
             this.setPointer(position);
             this.notify(position / this.width);
         });
