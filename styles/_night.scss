@@ -1,0 +1,23 @@
+.night {
+    background: #2c3e50;
+    color: white;
+
+    .line {
+        stroke: $night-secondary;
+    }
+
+    .label {
+        fill: $night-primary;
+        font-size: 1.3rem;
+    }
+
+    .shadow {
+        background: rgba($night-secondary, 0.5);
+    }
+    .draggable {
+        border: 2px solid rgba($night-primary, 0.8);
+    }
+    .draggable > div {
+        background: rgba($night-primary, 0.8);
+    }
+}

@@ -1,0 +1,20 @@
+.container {
+    overflow: hidden;
+    max-width: 100%;
+    height: 100%;
+    min-height: 400; // TODO: Refactor together with the actual SVG height
+}
+
+.line {
+    stroke: $secondary;
+}
+
+.label {
+    fill: $primary;
+    font-size: 1.3rem;
+}
+
+.chart {
+    fill: transparent;
+    stroke-width: 2px;
+}
