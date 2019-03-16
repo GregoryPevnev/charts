@@ -77,7 +77,7 @@ class Scales {
 
     render(cont) {
         cont.prepend(this.linesGroup);
-        cont.append(this.labelsGroup);
+        cont.prepend(this.labelsGroup);
     }
 }
 

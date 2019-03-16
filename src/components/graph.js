@@ -155,7 +155,7 @@ class DynamicGraph extends Graph {
     }
 }
 
-const filters = `<filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2" /></filter>`;
+const filters = `<filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="5" flood-color="#000" flood-opacity="0.2" /></filter>`;
 const getDefs = () => {
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     defs.innerHTML = filters;
