@@ -45,6 +45,7 @@ export const createRecordGetter = store => () => {
     if (selected === null) return null;
 
     const at = toPercent(selected, times[0], times[times.length - 1]);
+    // console.log("At", at);
     return { data: records[selected], at, title: formatFullDate(selected), states };
 };
 
@@ -52,10 +53,4 @@ export const createMaxGetter = store => () => findMax(store.state());
 export const createRangeLoader = store => () => mapItems(store.state());
 export const createFullLoader = store => () => mapItems({ ...store.state(), from: 0, to: 1 });
 
-const DAY_DIFF = 6;
-export const createDatesLoader = store => () => {
-    const { to, from, times } = store.state();
-
-    const diff = Math.floor(((to - from) * times.length) / DAY_DIFF);
-    return times.filter((_, i) => i % diff == 0).map(formatDate);
-};
+export const createDatesLoader = store => () => store.state().times.map(formatDate);

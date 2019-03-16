@@ -1,23 +1,8 @@
 import { createAnimation, createChart, createPoint } from "./common";
 import { HEIGHT } from "./values";
+import { getCanvas } from "./canvas";
 
 class Chart {
-    mapPoint({ value, at }) {
-        return {
-            x: this.WIDTH * at,
-            y: this.HEIGHT * (value === -1 ? -0.5 : 1 - value) // -50% -> Off-screen
-        };
-    }
-
-    mapPoints(marks) {
-        return Array.from(marks)
-            .map(v => {
-                const { x, y } = this.mapPoint(v);
-                return `${x} ${y}`;
-            })
-            .join(",");
-    }
-
     transition(oldPoints, newPoints) {
         if (newPoints === oldPoints) return;
 
@@ -28,19 +13,18 @@ class Chart {
     }
 
     constructor(HEIGHT, chart, state, point) {
-        this.WIDTH = 0;
-        this.HEIGHT = HEIGHT;
+        this.canvas = getCanvas(0, HEIGHT);
         this.chart = chart; // Polyline
         this.state = state; // Animate
         this.values = null; // Previous Values
-        this.selected = point; // Point
+        this.selected = point; // Point (For Selection)
     }
 
     change(values, width) {
-        if (this.values === null || this.WIDTH !== width) {
-            this.WIDTH = width;
-            this.chart.setAttributeNS(null, "points", this.mapPoints(values));
-        } else this.transition(this.mapPoints(this.values), this.mapPoints(values));
+        if (this.values === null || this.canvas.width !== width) {
+            this.canvas.width = width;
+            this.chart.setAttributeNS(null, "points", this.canvas.mapPoints(values));
+        } else this.transition(this.canvas.mapPoints(this.values), this.canvas.mapPoints(values));
 
         this.values = values;
         // Note: Rising from the bottom does not work
@@ -49,7 +33,7 @@ class Chart {
     setSelected(at) {
         if (at) {
             const pos = this.values.find(v => v.at === at);
-            const { x, y } = this.mapPoint(pos);
+            const { x, y } = this.canvas.mapPoint(pos);
 
             this.selected.setAttributeNS(null, "cx", x);
             this.selected.setAttributeNS(null, "cy", y);

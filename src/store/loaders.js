@@ -1,6 +1,6 @@
 import { toPercent } from "../services/scaling";
 
-export const mapColumns = ({ columns, types, colors, names }) => {
+export const mapColumns = ({ columns, colors, names }) => {
     return columns.reduce(
         (res, c, i) =>
             c[0] === "x"
@@ -9,10 +9,9 @@ export const mapColumns = ({ columns, types, colors, names }) => {
                       ...res,
                       columns: [...res.columns, c.slice(1)],
                       labels: [...res.labels.slice(0, i), names[c[0]], ...res.labels.slice(i + 1)],
-                      types: [...res.types.slice(0, i), types[c[0]], ...res.types.slice(i + 1)],
                       colors: [...res.colors.slice(0, i), colors[c[0]], ...res.colors.slice(i + 1)]
                   },
-        { times: [], columns: [], labels: [], types: [], colors: [] }
+        { times: [], columns: [], labels: [], colors: [] }
     );
 };
 
@@ -40,9 +39,10 @@ export const getList = ({ columns, times, labels, colors, types }) => {
         columns.map(() => []) // Pre-Compute arrays
     );
 
-    return values.map((v, i) => ({ type: types[i], label: labels[i], color: colors[i], values: v }));
+    return values.map((v, i) => ({ label: labels[i], color: colors[i], values: v }));
 };
 
+// TODO: Rendering X-Graph separately
 const loadData = state => {
     const data = mapColumns(state);
 

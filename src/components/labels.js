@@ -1,23 +1,28 @@
 import { HEIGHT } from "./values";
 import { createGroup, createLabel } from "./common";
+import { Positioner } from "../services/positioning";
 
 const EXTRA = 5;
+const LABEL = 40;
 
 class Labels {
-    constructor(group) {
+    constructor(at, group) {
+        this.at = at;
         this.group = group;
     }
 
-    setDates(dates) {
+    setDates(width, dates) {
         // TODO: Animations + Cache (Compare + Animations - As planned)
+        // Note: Do NOT Touch positioning, until the VERY end - It works jsut fine
+        const positioner = new Positioner(width, dates.length, LABEL);
+
         this.group.innerHTML = "";
 
-        dates.forEach((date, i) => {
-            const position = (100 / dates.length) * i + "%"; // TODO: Replace with pixels
-            const label = createLabel(position, HEIGHT - EXTRA);
+        dates.forEach(date => {
+            const label = createLabel(positioner.getNextPosition(), this.at);
             label.textContent = date;
             label.classList.add("date");
-            this.group.appendChild(label);
+            this.group.append(label);
         });
     }
 
@@ -26,4 +31,4 @@ class Labels {
     }
 }
 
-export const getLabels = () => new Labels(createGroup("label"));
+export const getLabels = () => new Labels(HEIGHT - EXTRA, createGroup("label"));

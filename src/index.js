@@ -4,6 +4,7 @@ import state, { loadRange, loadAll, getRecord, getMax, loadDates, MIN_GAP } from
 import getController from "./components/control";
 import { getChecks } from "./components/checks";
 import { getSwitchButton } from "./components/nightBtn";
+import { getRound } from "./services/scaling";
 
 // TODO: Separate in the end (Main / DI / etc.)
 
@@ -19,12 +20,13 @@ const charts = all.map(({ color }) => getChart(color));
 const checks = getChecks(all);
 charts.forEach(chart => graph.addChart(chart));
 
+// TODO: Sub-States for each graph
 state.listen(() => {
     const { from, to, isNight } = state.state();
     const record = getRecord();
     const max = getMax();
 
-    graph.change(loadRange(), to - from);
+    graph.change(loadRange(), to - from); // Must be performed first (Setting Width)
     graph.scroll(from);
     graph.showScales(max);
     graph.showLabels(loadDates());
@@ -36,9 +38,8 @@ state.listen(() => {
 });
 
 scroller.onChange(({ from, to }) => {
-    const currentState = state.state(); // Taking array-indexing into account
+    const currentState = state.state();
 
-    // TODO: Constants for percentage
     const newFrom = from ? Math.max(0, from) : currentState.from,
         newTo = to ? Math.min(1, to) : currentState.to;
 
@@ -62,9 +63,10 @@ checks.onChange(i => {
 graph.onSelection(at => {
     const { times } = state.state();
 
-    const selected = at ? times[Math.max(0, Math.round(times.length * at) - 1)] : null;
+    if (at === null) return state.mutate({ selected: null });
 
-    state.mutate({ selected });
+    const selected = getRound((times.length - 1) * at);
+    if (selected !== null) state.mutate({ selected: times[selected] });
 });
 
 button.onSwitch(() => state.mutate({ isNight: !state.state().isNight }));

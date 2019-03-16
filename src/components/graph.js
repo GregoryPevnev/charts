@@ -3,11 +3,12 @@ import { HEIGHT } from "./values";
 import { getLabels } from "./labels";
 import { getScales } from "./scales";
 import { getPopup, DETAIL_WIDTH } from "./details";
+import { distinct } from "../services/utils";
 
 // TODO: Optimizations, Re-rendering, etc.
+// TODO: Separate into multiple files if possible (Maybe Super-Graph and Sub-Graph)
 
-// TODO: Refactor this part somehow + Try using separate svg
-const filters = `<filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2" /></filter>`;
+const LABELS_PER_SCREEN = 6;
 
 class Graph {
     getVisibleWidth() {
@@ -43,20 +44,19 @@ class Graph {
     }
 }
 
-// Important: Does NOT differenciate between Points and Lines Charts -> TODO: Polymorphism
 class DynamicGraph extends Graph {
     notify(value) {
         this.listeners.forEach(l => l(value));
     }
 
-    getOffset() {
-        return this.cont.scrollLeft;
+    getRelation() {
+        return Math.floor(this.width / this.cont.getBoundingClientRect().width);
     }
 
     getDetailPosition(at) {
         const UNIT = DETAIL_WIDTH / 2;
         const pos = this.width * at;
-        const relPos = pos - this.getOffset();
+        const relPos = pos - this.cont.scrollLeft;
 
         if (relPos <= UNIT) return pos;
         if (this.cont.getBoundingClientRect().width - relPos <= UNIT) return pos - DETAIL_WIDTH;
@@ -70,7 +70,7 @@ class DynamicGraph extends Graph {
 
     initialize() {
         this.cont.addEventListener("mousemove", e => {
-            const position = this.getOffset() + e.x - this.cont.getBoundingClientRect().left;
+            const position = e.offsetX;
             this.setPointer(position);
             this.notify(position / this.width);
         });
@@ -107,7 +107,14 @@ class DynamicGraph extends Graph {
     }
 
     showLabels(dates) {
-        this.labels.setDates(dates);
+        const RELATION = this.getRelation(),
+            TOP = dates.length - 1;
+        const STEP = 100 / LABELS_PER_SCREEN / RELATION;
+
+        const filtered = [];
+        for (let i = 0; i <= 101; i += STEP) filtered.push(dates[Math.ceil(Math.min(i / 100, 1) * TOP)]);
+
+        this.labels.setDates(this.width, distinct(filtered));
     }
 
     showScales(max) {
@@ -135,7 +142,7 @@ class DynamicGraph extends Graph {
     }
 }
 
-// TODO: Refactor if possible
+const filters = `<filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2" /></filter>`;
 const getDefs = () => {
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     defs.innerHTML = filters;
