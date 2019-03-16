@@ -63,6 +63,17 @@ class DynamicGraph extends Graph {
         return pos - UNIT;
     }
 
+    updateLabels() {
+        // TODO: Move out to mapper if possible ??? OR Into Labels itself
+        const RELATION = this.getRelation(),
+            STEP = 100 / LABELS_PER_SCREEN / RELATION;
+
+        const filtered = [];
+        for (let i = 0; i <= 101; i += STEP) filtered.push(Math.floor(Math.min(i / 100, 1) * this.labelsCount));
+
+        this.labels.setVisibility(this.width, distinct(filtered));
+    }
+
     setPointer(x) {
         this.pointer.setAttributeNS(null, "x1", x);
         this.pointer.setAttributeNS(null, "x2", x);
@@ -88,6 +99,7 @@ class DynamicGraph extends Graph {
         this.labels = labels;
         this.scales = scales;
         this.width = 0;
+        this.labelsCount = 0;
         this.popup = popup;
         this.pointer = pointer;
         this.listeners = [];
@@ -107,14 +119,8 @@ class DynamicGraph extends Graph {
     }
 
     showLabels(dates) {
-        const RELATION = this.getRelation(),
-            TOP = dates.length - 1;
-        const STEP = 100 / LABELS_PER_SCREEN / RELATION;
-
-        const filtered = [];
-        for (let i = 0; i <= 101; i += STEP) filtered.push(dates[Math.ceil(Math.min(i / 100, 1) * TOP)]);
-
-        this.labels.setDates(this.width, distinct(filtered));
+        this.labelsCount = dates.length - 1;
+        this.labels.setDates(dates);
     }
 
     showScales(max) {
@@ -125,6 +131,7 @@ class DynamicGraph extends Graph {
         this.width = this.cont.getBoundingClientRect().width / width;
         this.graph.setAttributeNS(null, "width", this.width);
         this.charts.forEach((chart, i) => chart.change(data[i].values, this.width));
+        this.updateLabels();
     }
 
     scroll(offset) {

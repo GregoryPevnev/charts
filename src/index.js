@@ -18,7 +18,9 @@ const controller = getController(all);
 const scroller = controller.getScroller();
 const charts = all.map(({ color }) => getChart(color));
 const checks = getChecks(all);
+
 charts.forEach(chart => graph.addChart(chart));
+graph.showLabels(loadDates());
 
 // TODO: Sub-States for each graph
 state.listen(() => {
@@ -29,7 +31,6 @@ state.listen(() => {
     graph.change(loadRange(), to - from); // Must be performed first (Setting Width)
     graph.scroll(from);
     graph.showScales(max);
-    graph.showLabels(loadDates());
     graph.showDetails(record);
     scroller.setWindow(from, to);
     checks.setStates(state.state().states);

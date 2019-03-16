@@ -15,6 +15,7 @@ const getMaxFinder = () => {
         const s = `${currentFrom}:::${currentTo}:::${states.join(",")}`;
         if (!cache[s])
             cache[s] = Math.max(
+                0, // Default for no values at all
                 ...list
                     .filter((_, i) => states[i])
                     .map(({ values }) =>
