@@ -118,7 +118,7 @@ class DynamicGraph extends Graph {
     }
 
     showScales(max) {
-        this.scales.label(max);
+        this.scales.scale(max);
     }
 
     change(data, width) {

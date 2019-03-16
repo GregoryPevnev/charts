@@ -1,0 +1,66 @@
+.animate {
+    animation-duration: 0.3s;
+    animation-timing-function: ease;
+}
+
+// Note: Cannot use multiple keyframe-animations -> 4 separate animations for each
+
+@keyframes enterDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes enterUp {
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes leaveDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+}
+
+@keyframes leaveUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+.enterDown {
+    animation-name: enterDown;
+}
+
+.enterUp {
+    animation-name: enterUp;
+}
+
+.leaveDown {
+    animation-name: leaveDown;
+}
+
+.leaveUp {
+    animation-name: leaveUp;
+}
