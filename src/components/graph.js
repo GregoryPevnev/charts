@@ -7,6 +7,7 @@ import { distinct } from "../services/utils";
 
 // TODO: Optimizations, Re-rendering, etc.
 // TODO: Separate into multiple files if possible (Maybe Super-Graph and Sub-Graph)
+// TODO: REFACTOR REALLY FUCKING GOOD - Especially Bounding-Rectangle
 
 const LABELS_PER_SCREEN = 6;
 
@@ -45,8 +46,9 @@ class Graph {
 }
 
 class DynamicGraph extends Graph {
-    notify(value) {
-        this.listeners.forEach(l => l(value));
+    notify(position, isMobile) {
+        this.setPointer(position);
+        this.listeners.forEach(l => l(position / this.width, isMobile));
     }
 
     getRelation() {
@@ -75,15 +77,19 @@ class DynamicGraph extends Graph {
     }
 
     setPointer(x) {
-        this.pointer.setAttributeNS(null, "x1", x);
-        this.pointer.setAttributeNS(null, "x2", x);
+        if (x !== null) {
+            this.pointer.setAttributeNS(null, "x1", x);
+            this.pointer.setAttributeNS(null, "x2", x);
+        }
     }
 
     initialize() {
-        this.cont.addEventListener("mousemove", e => {
-            const position = e.offsetX;
-            this.setPointer(position);
-            this.notify(position / this.width);
+        this.cont.addEventListener("mousemove", e => this.notify(e.offsetX, false));
+
+        this.cont.addEventListener("touchstart", e => {
+            e.preventDefault(); // Prevents "mousemove" from firing
+            const position = e.touches[0].clientX + this.cont.scrollLeft - this.cont.getBoundingClientRect().left;
+            this.notify(position, true);
         });
 
         this.cont.addEventListener("mouseleave", () => {

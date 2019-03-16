@@ -8,8 +8,6 @@ const INIT_POSITION = HEIGHT - LABEL_SPAN + LABEL_OFFSET_Y;
 const renderLabels = (max, x) => {
     const labels = [];
 
-    console.log(max);
-
     for (let i = 1; i < ROWS; i++) {
         const value = max === 0 ? null : Math.ceil(max * (ROW_SPAN / 100) * i);
         const label = createLabel(LABEL_OFFSET_X + x, INIT_POSITION - UNIT * i, ROW_SPAN * i + "%");

@@ -61,12 +61,15 @@ checks.onChange(i => {
     state.mutate({ states: newStates });
 });
 
-graph.onSelection(at => {
+graph.onSelection((at, isMobile) => {
     const { times } = state.state();
 
     if (at === null) return state.mutate({ selected: null });
 
-    const selected = getRound((times.length - 1) * at);
+    // Differes depending on device
+    // Mobile -> Show closest possible
+    // Desktop -> Only if the point is close
+    const selected = isMobile ? Math.round((times.length - 1) * at) : getRound((times.length - 1) * at);
     if (selected !== null) state.mutate({ selected: times[selected] });
 });
 

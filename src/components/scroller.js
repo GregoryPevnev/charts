@@ -48,6 +48,10 @@ class Scroller {
         this.bar.addEventListener("mousedown", e => this.handleDown(e.target, e.x));
         this.bar.addEventListener("mouseup", () => (this.state = NO));
         this.bar.addEventListener("mouseleave", () => (this.state = NO));
+
+        this.bar.addEventListener("touchmove", e => this.handleMove(e.touches[0].clientX));
+        this.bar.addEventListener("touchstart", e => this.handleDown(e.target, e.touches[0].clientX));
+        this.bar.addEventListener("touchend", () => (this.state = NO));
     }
 
     constructor(bar, shadow, draggable, leftTouch, rightTouch) {
