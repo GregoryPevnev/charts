@@ -1,4 +1,4 @@
-import { createContainer, createSVG, createChart, mapPoints } from "./common";
+import { createContainer } from "./common";
 
 const NO = 0;
 const LEFT_RESIZE = 1;
@@ -31,6 +31,8 @@ class Scroller {
                 return this.notify({ to: this.getPosition(x) });
             case MOVE:
                 return this.setPosition(x);
+            default:
+                this.notify(null);
         }
     }
 
@@ -43,15 +45,20 @@ class Scroller {
         }
     }
 
+    ended() {
+        this.state = NO;
+        this.handleMove(null);
+    }
+
     initialize() {
         this.bar.addEventListener("mousemove", e => this.handleMove(e.x));
         this.bar.addEventListener("mousedown", e => this.handleDown(e.target, e.x));
-        this.bar.addEventListener("mouseup", () => (this.state = NO));
-        this.bar.addEventListener("mouseleave", () => (this.state = NO));
+        this.bar.addEventListener("mouseup", this.ended.bind(this));
+        this.bar.addEventListener("mouseleave", this.ended.bind(this));
 
         this.bar.addEventListener("touchmove", e => this.handleMove(e.touches[0].clientX));
         this.bar.addEventListener("touchstart", e => this.handleDown(e.target, e.touches[0].clientX));
-        this.bar.addEventListener("touchend", () => (this.state = NO));
+        this.bar.addEventListener("touchend", this.ended.bind(this));
     }
 
     constructor(bar, shadow, draggable, leftTouch, rightTouch) {

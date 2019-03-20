@@ -23,7 +23,7 @@ const renderLabels = (max, x) => {
 
 class Scales {
     cleanUp(labels) {
-        setTimeout(() => labels.forEach(label => label.remove()), 300);
+        setTimeout(() => labels.forEach(label => label.remove()), 250);
     }
 
     getClasses(max) {

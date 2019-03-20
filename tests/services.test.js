@@ -1,15 +1,15 @@
-import { getRound, toPercent } from "../src/services/scaling";
+import { getRounder, toPercent } from "../src/services/scaling";
 import { formatFullDate, formatDate } from "../src/services/dates";
 
 describe("Math Services", () => {
     test("should round", () => {
-        expect(getRound(25.91)).toBe(26);
-        expect(getRound(25.07)).toBe(25);
+        expect(getRounder(0.1)(25.91)).toBe(26);
+        expect(getRounder(0.1)(25.07)).toBe(25);
     });
 
     test("should not round", () => {
-        expect(getRound(25.89)).toBeNull();
-        expect(getRound(25.11)).toBeNull();
+        expect(getRounder(0.1)(25.89)).toBeNull();
+        expect(getRounder(0.1)(25.11)).toBeNull();
     });
 
     test("should get percentage", () => {

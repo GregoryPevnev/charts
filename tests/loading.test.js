@@ -26,22 +26,20 @@ describe("Loading data", () => {
         const res = mapColumns(data);
 
         expect(getList(res)).toEqual([
-            { color: "C1", label: "1", values: [{ value: 1, at: 0 }, { value: 2, at: 1 }] },
-            { color: "C2", label: "2", values: [{ value: 3, at: 0 }, { value: 4, at: 1 }] }
+            { color: "C1", label: "1", values: [1, 2] },
+            { color: "C2", label: "2", values: [3, 4] }
         ]);
     });
 
     test("should load all data", () => {
         expect(loadData(data)).toEqual({
-            list: [
-                { color: "C1", label: "1", values: [{ value: 1, at: 0 }, { value: 2, at: 1 }] },
-                { color: "C2", label: "2", values: [{ value: 3, at: 0 }, { value: 4, at: 1 }] }
-            ],
+            list: [{ color: "C1", label: "1", values: [1, 2] }, { color: "C2", label: "2", values: [3, 4] }],
             records: {
                 843253454535: [{ value: 1, color: "C1", label: "1" }, { value: 3, color: "C2", label: "2" }],
                 543253454535: [{ value: 2, color: "C1", label: "1" }, { value: 4, color: "C2", label: "2" }]
             },
-            times: [543253454535, 843253454535]
+            times: [543253454535, 843253454535],
+            positions: [0, 1]
         });
     });
 });

@@ -26,30 +26,18 @@ export const getRecords = ({ columns, times, labels, colors }) =>
 
 export const getTimes = times => times.slice().sort();
 
-export const getList = ({ columns, times, labels, colors, types }) => {
-    const values = times.reduce(
-        (mapped, stamp, j) =>
-            mapped.map((arr, i) => [
-                ...arr,
-                {
-                    value: columns[i][j],
-                    at: toPercent(stamp, times[0], times[times.length - 1])
-                }
-            ]),
-        columns.map(() => []) // Pre-Compute arrays
-    );
+export const getList = ({ columns, labels, colors }) =>
+    columns.map((v, i) => ({ label: labels[i], color: colors[i], values: v }));
 
-    return values.map((v, i) => ({ label: labels[i], color: colors[i], values: v }));
-};
-
-// TODO: Rendering X-Graph separately
 const loadData = state => {
-    const data = mapColumns(state);
+    const data = mapColumns(state),
+        times = getTimes(data.times);
 
     return {
-        times: getTimes(data.times),
+        times,
         records: getRecords(data),
-        list: getList(data)
+        list: getList(data),
+        positions: times.map(stamp => toPercent(stamp, times[0], times[times.length - 1]))
     };
 };
 

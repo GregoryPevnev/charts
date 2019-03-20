@@ -1,3 +1,8 @@
+import { createButton } from "./common";
+
+const DAY_TEXT = "Switch to Night Mode",
+    NIGHT_TEXT = "Switch to Day Mode";
+
 class SwitchButton {
     initialize() {
         this.button.addEventListener("click", () => this.listeners.forEach(l => l()));
@@ -19,17 +24,18 @@ class SwitchButton {
     switchMode(isNight) {
         if (isNight) {
             this.page.classList.add("night");
-            this.button.textContent = "Switch to Day Mode";
+            // TODO: Static-Values
+            this.button.textContent = NIGHT_TEXT;
         } else {
             this.page.classList.remove("night");
-            this.button.textContent = "Switch to Night Mode";
+            this.button.textContent = DAY_TEXT;
         }
+    }
+
+    render(target) {
+        target.append(this.button);
     }
 }
 
-export const getSwitchButton = () => {
-    const page = document.querySelector("body");
-    const button = document.querySelector(".btn");
-
-    return new SwitchButton(page, button);
-};
+export const getSwitchButton = (isDay = true) =>
+    new SwitchButton(document.querySelector("body"), createButton(isDay ? DAY_TEXT : NIGHT_TEXT));

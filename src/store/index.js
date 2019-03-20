@@ -1,25 +1,43 @@
 import getState from "./state";
-import loadData from "./loaders";
-import { createRecordGetter, createDatesLoader, createMaxGetter, createRangeLoader, createFullLoader } from "./mappers";
+import {
+    createRecordGetter,
+    createDatesLoader,
+    createMaxGetter,
+    createRangeLoader,
+    createFullLoader,
+    createPositionsLoader
+} from "./mappers";
 
 // 10%
-export const MIN_GAP = 0.1; // TODO: DI
+export const MIN_GAP = 0.1;
 
-const data = loadData(require("../../chart_data.json")[4]);
+const initStore = data => {
+    const store = getState({
+        ...data,
+        isNight: false,
+        states: data.list.map(() => true),
+        selected: null,
+        from: 1 - MIN_GAP, // Minimum gap - 12days + Starting from the end
+        to: 1
+    });
 
-const store = getState({
-    ...data,
-    isNight: false,
-    states: data.list.map(() => true),
-    selected: null,
-    from: 1 - MIN_GAP, // Minimum gap - 12days + Starting from the end
-    to: 1
-});
+    // TODO: Try achiving 100% abstraction with Actions and Mappers
 
-export const getRecord = createRecordGetter(store);
-export const getMax = createMaxGetter(store);
-export const loadDates = createDatesLoader(store);
-export const loadRange = createRangeLoader(store);
-export const loadAll = createFullLoader(store);
+    const getMax = createMaxGetter(store);
 
-export default store;
+    store.mutate({ localMax: getMax(1 - MIN_GAP, 1), globalMax: getMax() });
+
+    return {
+        store,
+        getMax,
+        getRecord: createRecordGetter(store),
+        loadDates: createDatesLoader(store),
+        loadRange: createRangeLoader(store),
+        loadAll: createFullLoader(store),
+        loadPositions: createPositionsLoader(store)
+    };
+};
+
+// TODO: Initialize with / Separate
+
+export default initStore;

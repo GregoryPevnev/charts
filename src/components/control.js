@@ -1,7 +1,9 @@
 import { createContainer } from "./common";
-import { getMiniGraph } from "./graph";
+import { getGraph } from "./graph";
 import { getScroller } from "./scroller";
 import { getChart } from "./chart";
+
+// TODO: Try adding more abstraction
 
 class Controller {
     constructor(bar, scroller, graph) {
@@ -14,9 +16,9 @@ class Controller {
         return this.scroller;
     }
 
-    setValues(data) {
+    setValues(data, positions) {
         // TODO: Optimize re-rendering
-        this.graph.setValues(data.map(d => d.values));
+        this.graph.setValues(data.map(d => d.values), positions);
     }
 
     render(parent) {
@@ -26,7 +28,7 @@ class Controller {
 
 const getController = data => {
     const bar = createContainer("bar");
-    const graph = getMiniGraph(50);
+    const graph = getGraph(50);
     const scroller = getScroller();
 
     data.forEach(({ color }) => graph.addChart(getChart(color, 50)));

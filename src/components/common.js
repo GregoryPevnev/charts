@@ -1,4 +1,4 @@
-const ANIMATION_DURATION = "0.2s";
+const ANIMATION_DURATION = "0.3s";
 const NS = "http://www.w3.org/2000/svg";
 
 export const createSVG = (height = "100%") => {
@@ -41,8 +41,8 @@ export const createPoint = color => {
 
 export const createPointer = () => {
     const line = document.createElementNS(NS, "line");
-    line.setAttributeNS(null, "x1", 0);
-    line.setAttributeNS(null, "x2", 0);
+    line.setAttributeNS(null, "x1", "-100%");
+    line.setAttributeNS(null, "x2", "-100%");
     line.setAttributeNS(null, "y1", "0%");
     line.setAttributeNS(null, "y2", "100%");
     line.classList.add("pointer");
@@ -61,7 +61,6 @@ export const createAnimation = attr => {
     animate.setAttributeNS(null, "dur", ANIMATION_DURATION);
     animate.setAttributeNS(null, "begin", "indefinite");
     animate.setAttributeNS(null, "attributeName", attr);
-    // animate.setAttributeNS(null, "fill", "freeze");
     return animate;
 };
 
@@ -99,4 +98,11 @@ export const createRect = (x, y, width, height) => {
     rect.setAttributeNS(null, "height", height);
 
     return rect;
+};
+
+export const createButton = text => {
+    const button = document.createElement("button");
+    button.className = "btn";
+    button.textContent = text;
+    return button;
 };
