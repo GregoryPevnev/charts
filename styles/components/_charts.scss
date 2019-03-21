@@ -6,12 +6,23 @@
     overflow: hidden;
     max-width: 100%;
     height: 100%;
-    min-height: 400; // TODO: Refactor together with the actual SVG height
     padding-bottom: 1rem;
 }
 
 .line {
     stroke: $secondary;
+
+    .night & {
+        stroke: $night-secondary;
+    }
+}
+
+.pointer {
+    stroke: $primary;
+
+    .night & {
+        stroke: $night-primary;
+    }
 }
 
 .date {
@@ -23,13 +34,13 @@
     }
 }
 
-.pointer {
-    stroke: $primary;
-}
-
 .label {
     fill: $primary;
     font-size: 1.3rem;
+
+    .night & {
+        fill: $night-primary;
+    }
 }
 
 .chart {
@@ -39,5 +50,9 @@
 
 .point {
     stroke-width: 3px;
-    fill: white;
+    fill: $light;
+
+    .night & {
+        fill: $dark;
+    }
 }

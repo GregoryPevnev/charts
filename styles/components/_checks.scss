@@ -1,6 +1,6 @@
 .check {
     padding: 0.75rem 1.5rem;
-    border: 1px solid #ddd;
+    border: 1px solid $primary;
     border-radius: 100px;
     margin: 1rem;
     margin-bottom: 0;
@@ -8,6 +8,11 @@
     display: inline-flex;
     align-items: center;
     cursor: pointer;
+
+    .night & {
+        color: $light;
+        border-color: $night-primary;
+    }
 
     &__icon {
         margin: auto;
@@ -21,10 +26,9 @@
 
     &__wrapper {
         border-radius: 50%;
-        border: 1px solid transparent;
-        color: white;
         display: inline-flex;
         margin-right: 1rem;
+        color: $light;
     }
 
     &--active {

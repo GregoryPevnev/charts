@@ -68,7 +68,7 @@ class DetailsPopup {
 
 export const getPopup = () => {
     const svg = createSVG("100%");
-    const rect = createRect(5, 5, DETAIL_WIDTH, DETAIL_HEIGHT);
+    const rect = createRect(5, 5, DETAIL_WIDTH, DETAIL_HEIGHT, 10);
     const title = createLabel(30, 20);
     const labels = createGroup();
 

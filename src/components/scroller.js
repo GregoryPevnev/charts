@@ -101,8 +101,8 @@ export const getScroller = () => {
     const overlay = createContainer("overlay");
     const shadow = createContainer("shadow");
     const draggable = createDraggable();
-    const leftTouch = createContainer();
-    const rightTouch = createContainer();
+    const leftTouch = createContainer("draggable__dragger");
+    const rightTouch = createContainer("draggable__dragger");
 
     draggable.append(leftTouch);
     draggable.append(rightTouch);

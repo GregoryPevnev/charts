@@ -1,0 +1,19 @@
+.btn {
+    position: fixed;
+    text-align: center;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    border: none;
+    background: transparent;
+    color: $action;
+    outline: none;
+    font-size: 2rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover,
+    &:active {
+        color: lighten($action, 25%);
+    }
+}

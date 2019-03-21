@@ -1,8 +1,16 @@
-@import "./variables.scss";
-@import "./base.scss";
-@import "./bar.scss";
-@import "./charts.scss";
-@import "./checks.scss";
-@import "./night.scss";
-@import "./popup.scss";
-@import "./animations.scss";
+@import "./abstracts/variables.scss";
+@import "./abstracts/animations.scss";
+
+@import "./base/base.scss";
+@import "./base/text.scss";
+
+@import "./components/bar.scss";
+@import "./components/charts.scss";
+@import "./components/checks.scss";
+@import "./components/popup.scss";
+@import "./components/button.scss";
+
+.night {
+    background: $dark;
+    color: $light;
+}

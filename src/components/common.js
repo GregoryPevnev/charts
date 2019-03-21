@@ -89,13 +89,15 @@ export const createCheck = (content, color) => {
     return label;
 };
 
-export const createRect = (x, y, width, height) => {
+export const createRect = (x, y, width, height, radius = 0) => {
     const rect = document.createElementNS(NS, "rect");
 
     rect.setAttributeNS(null, "x", x);
     rect.setAttributeNS(null, "y", y);
     rect.setAttributeNS(null, "width", width);
     rect.setAttributeNS(null, "height", height);
+    rect.setAttributeNS(null, "rx", radius);
+    rect.setAttributeNS(null, "ry", radius);
 
     return rect;
 };

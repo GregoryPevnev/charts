@@ -1,0 +1,16 @@
+.popup {
+    fill: $light;
+
+    .night & {
+        fill: $night-secondary;
+    }
+
+    &__title {
+        font-size: 1.4rem;
+        font-weight: bold;
+
+        .night & {
+            fill: $light;
+        }
+    }
+}
