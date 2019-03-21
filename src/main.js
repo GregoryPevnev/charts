@@ -9,24 +9,21 @@ import { getScales } from "./components/scales";
 import { getPopup } from "./components/details";
 import getWidthController from "./components/widthController";
 
-const getRound = getRounder(0.2); // Optimal Gap
+const getRound = getRounder(0.18); // Optimal Gap
 
-const initGraph = (data, target) => {
+const initGraph = (data, target, { GRAPH_SIZE, MINI_GRAPH_SIZE, ANIMATION_DURATION }) => {
     const { store, loadRange, loadAll, getRecord, getMax, loadDates, loadPositions } = initStore(data);
 
     const frame = getWidthController();
-    const labels = getLabels();
-    const scales = getScales();
+    const labels = getLabels(GRAPH_SIZE);
+    const scales = getScales(GRAPH_SIZE);
     const popup = getPopup();
+    const graph = getDynamicGraph(GRAPH_SIZE, frame, labels, scales, popup);
 
     const all = loadAll();
-    const graph = getDynamicGraph(frame, labels, scales, popup);
-    const bar = getBar(all);
-    const charts = all.map(({ color }) => getChart(color));
+    const bar = getBar(ANIMATION_DURATION, MINI_GRAPH_SIZE, all);
+    const charts = all.map(({ color }) => getChart(ANIMATION_DURATION, GRAPH_SIZE, color));
     const checks = getChecks(all);
-
-    charts.forEach(chart => graph.addChart(chart));
-    labels.setDates(loadDates());
 
     store.listen(() => {
         const { from, to, states, localMax } = store.state();
@@ -68,12 +65,15 @@ const initGraph = (data, target) => {
         }
     );
 
-    // TODO: Single action
     checks.onChange(i => {
-        const { from, to, states } = store.state();
+        const { states } = store.state();
+        const newStates = [...states.slice(0, i), !states[i], ...states.slice(i + 1)];
 
-        store.mutate({ states: [...states.slice(0, i), !states[i], ...states.slice(i + 1)] });
-        store.mutate({ localMax: getMax(from, to), globalMax: getMax() });
+        store.mutate({
+            localMax: getMax({ states: newStates }),
+            globalMax: getMax({ states: newStates, from: 0, to: 1 }),
+            states: newStates
+        });
     });
 
     graph.subscribe(
@@ -92,6 +92,9 @@ const initGraph = (data, target) => {
     graph.render(target);
     bar.render(target);
     checks.render(target);
+
+    charts.forEach(chart => graph.addChart(chart));
+    labels.setDates(loadDates());
 
     return store;
 };

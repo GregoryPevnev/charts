@@ -1,7 +1,8 @@
 import { createAnimation, createChart, createPoint } from "./common";
-import { HEIGHT } from "./values";
 import { getCanvas } from "./canvas";
 import { equal } from "../services/utils";
+
+const OFF_SCREEN = "-100%";
 
 class Chart {
     getPoints({ values, positions } = {}) {
@@ -32,13 +33,13 @@ class Chart {
         this.state.setAttributeNS(null, "to", yPoints);
         this.state.beginElement();
 
-        this.timer = setTimeout(() => this.chart.setAttributeNS(null, "points", yPoints), 250); // 250ms - Perfect for 300ms animation
+        this.timer = setTimeout(() => this.chart.setAttributeNS(null, "points", yPoints), this.duration - 10); // 10ms - Additional time-gap
 
         this.values = values;
     }
 
-    constructor(HEIGHT, chart, state, point) {
-        this.canvas = getCanvas(0, HEIGHT);
+    constructor(canvas, chart, state, point, ANIMATION_DURATION) {
+        this.canvas = canvas;
         this.chart = chart; // Polyline
         this.state = state; // Animate
 
@@ -49,9 +50,10 @@ class Chart {
         this.selected = point; // Point (For Selection)
 
         this.timer = null;
+
+        this.duration = ANIMATION_DURATION;
     }
 
-    // TODO: Cache positions - never change
     change(values, positions, width) {
         this.canvas.setWidth(width);
 
@@ -65,17 +67,17 @@ class Chart {
         this.positions = positions;
     }
 
-    setSelected(at) {
-        if (at) {
-            const pos = this.positions.indexOf(at);
-            const { x, y } = this.canvas.mapPoint({ value: this.values[pos], at: this.positions[pos] });
+    select(at) {
+        const pos = this.positions.indexOf(at);
+        const { x, y } = this.canvas.mapPoint({ value: this.values[pos], at: this.positions[pos] });
 
-            this.selected.setAttributeNS(null, "cx", x);
-            this.selected.setAttributeNS(null, "cy", y);
-        } else {
-            this.selected.setAttributeNS(null, "cx", "-100%"); // TODO: Make a static value
-            this.selected.setAttributeNS(null, "cy", "-100%");
-        }
+        this.selected.setAttributeNS(null, "cx", x);
+        this.selected.setAttributeNS(null, "cy", y);
+    }
+
+    unselect() {
+        this.selected.setAttributeNS(null, "cx", OFF_SCREEN);
+        this.selected.setAttributeNS(null, "cy", OFF_SCREEN);
     }
 
     render(target) {
@@ -84,14 +86,14 @@ class Chart {
     }
 }
 
-export const getChart = (color, height = undefined) => {
+export const getChart = (ANIMATION_DURATION, HEIGHT, color) => {
     const line = createChart(color);
-    const animate = createAnimation("points");
+    const animate = createAnimation("points", ANIMATION_DURATION);
     const point = createPoint(color);
 
     line.appendChild(animate);
 
-    const chart = new Chart(height || HEIGHT, line, animate, point);
+    const chart = new Chart(getCanvas(0, HEIGHT), line, animate, point, ANIMATION_DURATION);
 
     return chart;
 };

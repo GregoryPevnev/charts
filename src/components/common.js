@@ -1,5 +1,5 @@
-const ANIMATION_DURATION = "0.3s";
-const NS = "http://www.w3.org/2000/svg";
+export const POINT_RADIUS = 5;
+export const NS = "http://www.w3.org/2000/svg";
 
 export const createSVG = (height = "100%") => {
     const graph = document.createElementNS(NS, "svg");
@@ -9,7 +9,7 @@ export const createSVG = (height = "100%") => {
 };
 
 export const createChart = color => {
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    const line = document.createElementNS(NS, "polyline");
     line.setAttributeNS(null, "stroke", color);
     return line;
 };
@@ -31,9 +31,9 @@ export const createLine = y => {
 
 export const createPoint = color => {
     const point = document.createElementNS(NS, "circle");
-    point.setAttributeNS(null, "r", 5);
-    point.setAttributeNS(null, "cx", -5);
-    point.setAttributeNS(null, "cy", -5);
+    point.setAttributeNS(null, "r", POINT_RADIUS);
+    point.setAttributeNS(null, "cx", -POINT_RADIUS * 10);
+    point.setAttributeNS(null, "cy", -POINT_RADIUS * 10);
     point.setAttributeNS(null, "stroke", color);
     point.classList.add("point");
     return point;
@@ -56,9 +56,9 @@ export const createLabel = (x, y) => {
     return label;
 };
 
-export const createAnimation = attr => {
+export const createAnimation = (attr, duration) => {
     const animate = document.createElementNS(NS, "animate");
-    animate.setAttributeNS(null, "dur", ANIMATION_DURATION);
+    animate.setAttributeNS(null, "dur", duration / 1000 + "s");
     animate.setAttributeNS(null, "begin", "indefinite");
     animate.setAttributeNS(null, "attributeName", attr);
     return animate;

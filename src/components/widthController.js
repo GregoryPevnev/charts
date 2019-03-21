@@ -1,4 +1,3 @@
-// TODO: Observer-Pattern -> Changing width of graphs (Instead og Dynamic Graph)
 class WidthController {
     constructor() {
         this.elem = null;
@@ -25,12 +24,16 @@ class WidthController {
         return this.elem.getBoundingClientRect().width;
     }
 
+    getStart() {
+        return this.elem.getBoundingClientRect().left;
+    }
+
     getOffset() {
-        return Math.abs(this.elem.scrollLeft - this.elem.getBoundingClientRect().left);
+        return this.elem.scrollLeft - this.elem.getBoundingClientRect().left;
     }
 
     getStaticPosition(x) {
-        return (x - this.getOffset()) / this.getWidth();
+        return (x - this.getStart()) / this.getWidth();
     }
 
     getRelativePosition(at) {

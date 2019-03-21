@@ -24,7 +24,6 @@ class SwitchButton {
     switchMode(isNight) {
         if (isNight) {
             this.page.classList.add("night");
-            // TODO: Static-Values
             this.button.textContent = NIGHT_TEXT;
         } else {
             this.page.classList.remove("night");

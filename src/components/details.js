@@ -1,11 +1,9 @@
-import { createLabel, createGroup, createRect, createSVG } from "./common";
+import { createLabel, createGroup, createRect, createSVG, POINT_RADIUS } from "./common";
 
 const DETAIL_WIDTH = 130;
 const DETAIL_HEIGHT = 25;
-
-// TODO: Refactor rendering and formulas / values
-
 const DEFAULT_SIZE = 1.2;
+
 const computeFontSize = (text, rel = 1) => {
     const dec = Math.floor(text.length / 5);
     const size = (DEFAULT_SIZE - 0.2 * dec) * rel;
@@ -52,7 +50,7 @@ class DetailsPopup {
 
     show(pos, relPos, labels) {
         const HEIGHT = Math.ceil(labels / 2) * 55 + DETAIL_HEIGHT; // Ceil -> Increasing width for even
-        const AT = relPos <= DETAIL_WIDTH ? pos - DETAIL_WIDTH : pos;
+        const AT = relPos <= DETAIL_WIDTH ? pos - DETAIL_WIDTH - POINT_RADIUS * 3 : pos + POINT_RADIUS; // Note additional values to keep points visible
 
         this.popup.style.visibility = "visible";
         this.popup.setAttributeNS(null, "x", AT);

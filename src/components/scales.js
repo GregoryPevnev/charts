@@ -1,29 +1,34 @@
 import { createLine, createLabel, createGroup } from "./common";
-import { ROW_SPAN, LABEL_SPAN, HEIGHT, LABEL_OFFSET_X, LABEL_OFFSET_Y, ROWS } from "./values";
 
-// TODO: Refactor REALLY HEAVILY
-const UNIT = ((HEIGHT - LABEL_SPAN) / 100) * ROW_SPAN;
-const INIT_POSITION = HEIGHT - LABEL_SPAN + LABEL_OFFSET_Y;
-
-const renderLabels = (max, x) => {
-    const labels = [];
-
-    for (let i = 1; i < ROWS; i++) {
-        const value = max === 0 ? null : Math.ceil(max * (ROW_SPAN / 100) * i);
-        const label = createLabel(LABEL_OFFSET_X + x, INIT_POSITION - UNIT * i, ROW_SPAN * i + "%");
-
-        label.classList.add("animate");
-        label.textContent = String(value || "");
-
-        labels.push(label);
-    }
-
-    return labels;
-};
+const LABEL_SPAN = 20;
+const ROW_SPAN = 18; // Percentage span between columns(Max - 90%)
+const LABEL_OFFSET_X = 5;
+const LABEL_OFFSET_Y = -5;
+const ROWS = 6;
 
 class Scales {
     cleanUp(labels) {
         setTimeout(() => labels.forEach(label => label.remove()), 250);
+    }
+
+    renderLabels(max) {
+        const labels = [];
+
+        for (let i = 1; i < ROWS; i++) {
+            const value = max === 0 ? null : Math.ceil(max * (ROW_SPAN / 100) * i);
+            const label = createLabel(
+                LABEL_OFFSET_X + this.offset,
+                this.INIT_POSITION - this.UNIT * i,
+                ROW_SPAN * i + "%"
+            );
+
+            label.classList.add("animate");
+            label.textContent = String(value || "");
+
+            labels.push(label);
+        }
+
+        return labels;
     }
 
     getClasses(max) {
@@ -33,12 +38,12 @@ class Scales {
     }
 
     initialize() {
-        this.staticLabel = createLabel(LABEL_OFFSET_X, INIT_POSITION, ROW_SPAN + "%");
+        this.staticLabel = createLabel(LABEL_OFFSET_X, this.INIT_POSITION, ROW_SPAN + "%");
         this.staticLabel.textContent = 0;
         this.labelsGroup.append(this.staticLabel);
     }
 
-    constructor(linesGroup, labelsGroup) {
+    constructor(linesGroup, labelsGroup, UNIT, INIT_POSITION) {
         this.linesGroup = linesGroup;
         this.labelsGroup = labelsGroup;
         this.newLabels = [];
@@ -46,6 +51,9 @@ class Scales {
         this.staticLabel = null;
         this.max = null;
         this.offset = 0;
+
+        this.UNIT = UNIT;
+        this.INIT_POSITION = INIT_POSITION;
 
         this.initialize();
     }
@@ -58,12 +66,12 @@ class Scales {
     }
 
     scale(max) {
-        if (this.max === max) return; // TODO: Document Rule - Avoid unnecessary rendering
+        if (this.max === max) return;
         const { inClass, outClass } = this.getClasses(max);
 
         this.oldLabels = this.newLabels;
-        this.newLabels = renderLabels(max, this.offset);
-        this.newLabels.forEach((label, i) => {
+        this.newLabels = this.renderLabels(max);
+        this.newLabels.forEach(label => {
             this.labelsGroup.append(label);
             if (inClass !== null) label.classList.add(inClass);
         });
@@ -81,11 +89,14 @@ class Scales {
     }
 }
 
-export const getScales = () => {
+export const getScales = HEIGHT => {
+    const UNIT = ((HEIGHT - LABEL_SPAN) / 100) * ROW_SPAN;
+    const INIT_POSITION = HEIGHT - LABEL_SPAN + LABEL_OFFSET_Y;
+
     const linesTarget = createGroup("line");
     const labelsTarget = createGroup("label");
 
     for (let i = 0; i < ROWS; i++) linesTarget.appendChild(createLine(HEIGHT - LABEL_SPAN - UNIT * i));
 
-    return new Scales(linesTarget, labelsTarget);
+    return new Scales(linesTarget, labelsTarget, UNIT, INIT_POSITION);
 };

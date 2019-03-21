@@ -4,6 +4,10 @@ import initGraph from "./main";
 
 const chartData = require("../chart_data.json");
 
+const GRAPH_SIZE = 400;
+const MINI_GRAPH_SIZE = 50;
+const ANIMATION_DURATION = 300;
+
 const app = document.getElementById("app");
 const switchBtn = getSwitchButton();
 
@@ -23,7 +27,7 @@ const stores = chartData.map((data, i) => {
     graph.append(header);
     app.append(graph);
 
-    return initGraph(loadData(data), graph);
+    return initGraph(loadData(data), graph, { GRAPH_SIZE, MINI_GRAPH_SIZE, ANIMATION_DURATION });
 });
 
 const render = () => stores.forEach(state => state.mutate());

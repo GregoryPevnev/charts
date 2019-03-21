@@ -1,4 +1,3 @@
-import { HEIGHT } from "./values";
 import { createGroup, createLabel } from "./common";
 import { Positioner } from "../services/positioning";
 import { distinct } from "../services/utils";
@@ -13,8 +12,7 @@ class Labels {
         const STEP = MAXIMUM / LABELS_PER_SCREEN / relation;
 
         const filtered = [];
-        for (let i = 0; i <= MAXIMUM; i += STEP)
-            filtered.push(Math.floor(Math.min(i / MAXIMUM, 1) * this.dates.length));
+        for (let i = 0; i <= MAXIMUM; i += STEP) filtered.push(Math.ceil((i / MAXIMUM) * this.dates.length));
 
         return distinct(filtered);
     }
@@ -53,4 +51,4 @@ class Labels {
     }
 }
 
-export const getLabels = () => new Labels(HEIGHT - EXTRA, createGroup("label"));
+export const getLabels = HEIGHT => new Labels(HEIGHT - EXTRA, createGroup("label"));

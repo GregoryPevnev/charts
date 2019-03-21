@@ -6,9 +6,8 @@ import { toPercent } from "../services/scaling";
 const getMaxFinder = store => {
     const cache = {};
 
-    // TODO: Optimize later if needed
-    return (from = undefined, to = undefined) => {
-        const { times, list, states } = store.state();
+    return (customState = {}) => {
+        const { times, list, states, from, to } = { ...store.state(), ...customState };
         const max = times.length - 1;
         const currentFrom = from ? Math.round(from * max) : 0,
             currentTo = to ? Math.round(to * max) : max;
@@ -17,9 +16,7 @@ const getMaxFinder = store => {
         if (!cache[s])
             cache[s] = Math.max(
                 0, // Default for no values at all
-                ...list
-                    .filter((_, i) => states[i])
-                    .map(({ values }) => Math.max(...values.slice(currentFrom, currentTo + 1)))
+                ...list.map(({ values }, i) => (states[i] ? Math.max(...values.slice(currentFrom, currentTo + 1)) : 0))
             );
         return cache[s];
     };

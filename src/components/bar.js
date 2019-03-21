@@ -11,8 +11,6 @@ class Bar {
     }
 
     setValues(data, positions) {
-        // TODO: Optimize re-rendering
-        // TODO: Pass positions only ONCE
         this.graph.setValues(data, positions);
     }
 
@@ -31,13 +29,12 @@ class Bar {
     }
 }
 
-const getBar = data => {
+const getBar = (ANIMATION_DURATION, HEIGHT, data) => {
     const bar = createContainer("bar");
-    // TODO: DI + Width as a Magic-Value
-    const graph = getGraph(50);
+    const graph = getGraph(HEIGHT);
     const scroller = getScroller();
 
-    data.forEach(({ color }) => graph.addChart(getChart(color, 50)));
+    data.forEach(({ color }) => graph.addChart(getChart(ANIMATION_DURATION, HEIGHT, color)));
 
     graph.render(bar);
     scroller.render(bar);

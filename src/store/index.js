@@ -23,7 +23,7 @@ const initStore = data => {
 
     const getMax = createMaxGetter(store);
 
-    store.mutate({ localMax: getMax(1 - MIN_GAP, 1), globalMax: getMax() });
+    store.mutate({ localMax: getMax(), globalMax: getMax({ from: 0, to: 1 }) });
 
     return {
         store,
@@ -35,7 +35,5 @@ const initStore = data => {
         loadPositions: createPositionsLoader(store)
     };
 };
-
-// TODO: Initialize with / Separate
 
 export default initStore;

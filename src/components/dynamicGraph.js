@@ -1,5 +1,4 @@
 import { Graph } from "./graph";
-import { HEIGHT } from "./values";
 import { createGroup, createSVG, createContainer, createPointer } from "./common";
 import getFilterBuilder from "./filters";
 
@@ -27,6 +26,7 @@ class DynamicGraph extends Graph {
             e.preventDefault(); // Prevents "mousemove" from firing
 
             const position = e.touches[0].clientX + this.frame.getOffset();
+            console.log(position);
             this.notify(position, true);
         });
 
@@ -36,7 +36,7 @@ class DynamicGraph extends Graph {
     constructor(cont, graph, frame, labels, scales, charts, popup, pointer) {
         super(cont, frame, charts);
 
-        this.svg = graph; // TODO: Remove if possible / generalization
+        this.svg = graph;
         this.labels = labels;
         this.scales = scales;
         this.popup = popup;
@@ -54,17 +54,16 @@ class DynamicGraph extends Graph {
 
         this.popup.show(position, relativePosition, labels.length);
         this.popup.setData(title, labels);
-        this.charts.forEach(chart => chart.setSelected(at));
+        this.charts.forEach(chart => chart.select(at));
     }
 
     hideDetails() {
         this.setPointer("-100%");
         this.popup.hide();
-        this.charts.forEach(chart => chart.setSelected(null));
+        this.charts.forEach(chart => chart.unselect());
     }
 
     setValues(data, positions) {
-        // TODO: Final - Optimizations
         super.setValues(data, positions);
         this.svg.setAttributeNS(null, "width", this.frame.getWidth());
         this.labels.setVisibility(this.frame.getVisibleWidth(), this.frame.getWidth());
@@ -82,7 +81,7 @@ class DynamicGraph extends Graph {
     }
 }
 
-export const getDynamicGraph = (frame, labels, scales, popup) => {
+export const getDynamicGraph = (HEIGHT, frame, labels, scales, popup) => {
     const cont = createContainer("container");
     const graph = createSVG(HEIGHT);
     const charts = createGroup("chart");
