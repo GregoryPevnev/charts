@@ -1,6 +1,6 @@
 import { getDynamicGraph } from "./components/dynamicGraph";
 import { getChart } from "./components/chart";
-import initStore, { MIN_GAP } from "./store";
+import initStore, { MIN_SPAN } from "./store";
 import getBar from "./components/bar";
 import { getChecks } from "./components/checks";
 import { getRounder } from "./services/scaling";
@@ -9,7 +9,7 @@ import { getScales } from "./components/scales";
 import { getPopup } from "./components/details";
 import getWidthController from "./components/widthController";
 
-const getRound = getRounder(0.18); // Optimal Gap
+const getRound = getRounder(0.18); // Optimal Span
 
 const initGraph = (data, target, { GRAPH_SIZE, MINI_GRAPH_SIZE, ANIMATION_DURATION }) => {
     const { store, loadRange, loadAll, getRecord, getMax, loadDates, loadPositions } = initStore(data);
@@ -48,8 +48,9 @@ const initGraph = (data, target, { GRAPH_SIZE, MINI_GRAPH_SIZE, ANIMATION_DURATI
                 currentState = store.state();
             const newFrom = from ? Math.max(0, from) : currentState.from,
                 newTo = to ? Math.min(1, to) : currentState.to;
+            const currentGap = (newTo - newFrom) * currentState.times.length;
 
-            if (newTo - newFrom > MIN_GAP) store.mutate({ from: newFrom, to: newTo, selected: null });
+            if (currentGap > MIN_SPAN) store.mutate({ from: newFrom, to: newTo, selected: null });
         },
         () => {
             const { from, to } = store.state();

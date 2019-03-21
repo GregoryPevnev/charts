@@ -10,7 +10,4 @@
 @import "./components/popup.scss";
 @import "./components/button.scss";
 
-.night {
-    background: $dark;
-    color: $light;
-}
+@import "./layout/main";

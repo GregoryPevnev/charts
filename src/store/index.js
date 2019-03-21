@@ -8,8 +8,7 @@ import {
     createPositionsLoader
 } from "./mappers";
 
-// 10%
-export const MIN_GAP = 0.1; // TODO: Make dynamic
+export const MIN_SPAN = 12;
 
 const initStore = data => {
     const store = getState({
@@ -17,7 +16,7 @@ const initStore = data => {
         isNight: false,
         states: data.list.map(() => true),
         selected: null,
-        from: 1 - MIN_GAP, // Minimum gap - 12days + Starting from the end
+        from: 1 - MIN_SPAN / data.times.length, // Minimum span - 12days + Starting from the end
         to: 1
     });
 
