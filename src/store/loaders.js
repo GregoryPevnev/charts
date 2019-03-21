@@ -29,7 +29,7 @@ export const getList = ({ columns, labels, colors }) =>
 
 const loadData = state => {
     const data = mapColumns(state),
-        times = data.times.sort();
+        times = data.times.slice().sort();
 
     return {
         times,
