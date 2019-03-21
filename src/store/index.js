@@ -9,7 +9,7 @@ import {
 } from "./mappers";
 
 // 10%
-export const MIN_GAP = 0.1;
+export const MIN_GAP = 0.1; // TODO: Make dynamic
 
 const initStore = data => {
     const store = getState({
@@ -20,8 +20,6 @@ const initStore = data => {
         from: 1 - MIN_GAP, // Minimum gap - 12days + Starting from the end
         to: 1
     });
-
-    // TODO: Try achiving 100% abstraction with Actions and Mappers
 
     const getMax = createMaxGetter(store);
 

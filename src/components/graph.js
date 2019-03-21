@@ -1,18 +1,13 @@
 import { createGroup, createSVG } from "./common";
+import getWidthController from "./widthController";
 
 export class Graph {
-    getVisibleWidth() {
-        return this.graph.getBoundingClientRect().width;
-    }
-
-    constructor(graph, charts, points) {
+    constructor(graph, frame, charts) {
         this.charts = [];
-        this.points = [];
 
         this.graph = graph;
-        this.width = this.getVisibleWidth();
+        this.frame = frame;
         this.chartGroup = charts;
-        this.pointsGroup = points;
     }
 
     addChart(chart) {
@@ -20,13 +15,8 @@ export class Graph {
         chart.render(this.chartGroup);
     }
 
-    addPoints(points) {
-        this.charts.push(points);
-        points.render(this.pointsGroup);
-    }
-
     setValues(data, positions) {
-        this.charts.forEach((chart, i) => chart.change(data[i], positions, this.getVisibleWidth()));
+        this.charts.forEach((chart, i) => chart.change(data[i].values, positions, this.frame.getWidth()));
     }
 
     render(parent) {
@@ -37,10 +27,9 @@ export class Graph {
 export const getGraph = height => {
     const graph = createSVG(height);
     const charts = createGroup("chart");
-    const points = createGroup("points");
+    const frame = getWidthController(graph);
 
     graph.append(charts);
-    graph.append(points);
 
-    return new Graph(graph, charts, points);
+    return new Graph(graph, frame, charts);
 };

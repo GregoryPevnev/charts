@@ -3,31 +3,37 @@ import { getGraph } from "./graph";
 import { getScroller } from "./scroller";
 import { getChart } from "./chart";
 
-// TODO: Try adding more abstraction
-
-class Controller {
+class Bar {
     constructor(bar, scroller, graph) {
         this.bar = bar;
         this.scroller = scroller;
         this.graph = graph;
     }
 
-    getScroller() {
-        return this.scroller;
-    }
-
     setValues(data, positions) {
         // TODO: Optimize re-rendering
-        this.graph.setValues(data.map(d => d.values), positions);
+        // TODO: Pass positions only ONCE
+        this.graph.setValues(data, positions);
+    }
+
+    setWindow(from, to) {
+        this.scroller.setWindow(from, to - from);
     }
 
     render(parent) {
         parent.append(this.bar);
     }
+
+    subscribe(change, frame, position) {
+        this.scroller.onPosition(position);
+        this.scroller.onFrame(frame);
+        this.scroller.onChange(change);
+    }
 }
 
-const getController = data => {
+const getBar = data => {
     const bar = createContainer("bar");
+    // TODO: DI + Width as a Magic-Value
     const graph = getGraph(50);
     const scroller = getScroller();
 
@@ -36,7 +42,7 @@ const getController = data => {
     graph.render(bar);
     scroller.render(bar);
 
-    return new Controller(bar, scroller, graph);
+    return new Bar(bar, scroller, graph);
 };
 
-export default getController;
+export default getBar;

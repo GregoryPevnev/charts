@@ -106,3 +106,10 @@ export const createButton = text => {
     button.textContent = text;
     return button;
 };
+
+export const createDraggable = () => {
+    const draggable = createContainer("draggable");
+    draggable.draggable = false;
+    draggable.ondragstart = () => false;
+    return draggable;
+};

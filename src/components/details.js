@@ -1,7 +1,7 @@
 import { createLabel, createGroup, createRect, createSVG } from "./common";
 
-export const DETAIL_WIDTH = 130;
-export const DETAIL_HEIGHT = 25;
+const DETAIL_WIDTH = 130;
+const DETAIL_HEIGHT = 25;
 
 // TODO: Refactor rendering and formulas / values
 
@@ -39,22 +39,24 @@ class DetailsPopup {
         this.labels = labels;
     }
 
-    setData(at, title, data) {
-        const HEIGHT = Math.ceil(data.length / 2) * 55 + DETAIL_HEIGHT; // Ceil -> Increasing width for even
-
-        this.popup.style.visibility = "visible";
-        this.popup.setAttributeNS(null, "x", at);
-        this.wrapper.setAttributeNS(null, "height", HEIGHT);
+    setData(title, data) {
         this.title.textContent = title;
         this.labels.innerHTML = "";
 
-        // TODO: Better formulas and rendering
-        // TODO: Caching / Preventing rendering (Only changing text -> No re-rendering)
         data.forEach((item, i) => {
             const X = (i % 2) * 60 + 15;
             const Y = Math.floor(i / 2) * 45 + 55; // Floor -> Only moving when the row is full
             renderLabel(item, X, Y, this.labels);
         });
+    }
+
+    show(pos, relPos, labels) {
+        const HEIGHT = Math.ceil(labels / 2) * 55 + DETAIL_HEIGHT; // Ceil -> Increasing width for even
+        const AT = relPos <= DETAIL_WIDTH ? pos - DETAIL_WIDTH : pos;
+
+        this.popup.style.visibility = "visible";
+        this.popup.setAttributeNS(null, "x", AT);
+        this.wrapper.setAttributeNS(null, "height", HEIGHT);
     }
 
     hide() {

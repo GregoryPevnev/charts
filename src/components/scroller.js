@@ -1,53 +1,48 @@
-import { createContainer } from "./common";
+import { createContainer, createDraggable } from "./common";
+import getWidthController from "./widthController";
 
-const NO = 0;
-const LEFT_RESIZE = 1;
-const RIGHT_RESIZE = 2;
-const MOVE = 3;
-
-// TODO: Refactor VERY HEAVILY
 class Scroller {
-    notify(state) {
+    notifyFrame() {
+        this.frameListeners.forEach(l => l());
+    }
+
+    notifyChange(state) {
         this.changeListeners.forEach(l => l(state));
     }
 
-    getPosition(x) {
-        const rect = this.bar.getBoundingClientRect();
-        return (x - rect.left) / rect.width;
-    }
-
-    // Using X (Global) for now -> Refactor into relative positioning if possible
-    setPosition(currentPosition) {
-        const diff = (currentPosition - this.position) / this.bar.getBoundingClientRect().width;
-        this.position = currentPosition;
+    notifyPosition(diff) {
         this.positionListeners.forEach(listener => listener(diff));
     }
 
+    setPosition(currentPosition) {
+        const diff = (currentPosition - this.position) / this.frame.getWidth();
+        this.position = currentPosition;
+        this.notifyPosition(diff);
+    }
+
     handleMove(x) {
-        switch (this.state) {
-            case LEFT_RESIZE:
-                return this.notify({ from: this.getPosition(x) });
-            case RIGHT_RESIZE:
-                return this.notify({ to: this.getPosition(x) });
-            case MOVE:
-                return this.setPosition(x);
-            default:
-                this.notify(null);
-        }
+        if (this.callback !== null) this.callback(x);
     }
 
     handleDown(target, x) {
-        if (target === this.leftTouch) this.state = LEFT_RESIZE;
-        else if (target === this.rightTouch) this.state = RIGHT_RESIZE;
-        else if (target === this.draggable) {
-            this.state = MOVE;
+        if (target === this.leftTouch)
+            return (this.callback = x => this.notifyChange({ from: this.frame.getStaticPosition(x) }));
+
+        if (target === this.rightTouch)
+            return (this.callback = x => this.notifyChange({ to: this.frame.getStaticPosition(x) }));
+
+        if (target === this.draggable) {
+            this.callback = x => this.setPosition(x);
             this.position = x;
+            return;
         }
+
+        this.callback = null;
     }
 
     ended() {
-        this.state = NO;
-        this.handleMove(null);
+        this.callback = null;
+        this.notifyFrame();
     }
 
     initialize() {
@@ -56,34 +51,33 @@ class Scroller {
         this.bar.addEventListener("mouseup", this.ended.bind(this));
         this.bar.addEventListener("mouseleave", this.ended.bind(this));
 
+        // Mobile Support
         this.bar.addEventListener("touchmove", e => this.handleMove(e.touches[0].clientX));
         this.bar.addEventListener("touchstart", e => this.handleDown(e.target, e.touches[0].clientX));
         this.bar.addEventListener("touchend", this.ended.bind(this));
     }
 
-    constructor(bar, shadow, draggable, leftTouch, rightTouch) {
+    constructor(bar, shadow, draggable, frame, leftTouch, rightTouch) {
         this.bar = bar;
         this.shadow = shadow;
         this.draggable = draggable;
         this.leftTouch = leftTouch;
         this.rightTouch = rightTouch;
+        this.frame = frame;
 
-        this.state = NO;
+        this.callback = null;
         this.position = null;
-        this.from = 0;
-        this.to = 0;
 
         this.changeListeners = [];
+        this.frameListeners = [];
         this.positionListeners = [];
 
         this.initialize();
     }
 
-    setWindow(from, to) {
-        this.from = from;
-        this.to = to;
-        this.shadow.style.width = this.from * 100 + "%";
-        this.draggable.style.width = (this.to - this.from) * 100 + "%";
+    setWindow(shadow, draggable) {
+        this.shadow.style.width = shadow * 100 + "%";
+        this.draggable.style.width = draggable * 100 + "%";
     }
 
     onChange(l) {
@@ -94,26 +88,17 @@ class Scroller {
         this.positionListeners.push(l);
     }
 
+    onFrame(l) {
+        this.frameListeners.push(l);
+    }
+
     render(parent) {
         parent.append(this.bar);
     }
 }
 
-const createDraggable = () => {
-    const draggable = createContainer("draggable");
-    draggable.draggable = false;
-    draggable.ondragstart = () => false;
-    return draggable;
-};
-
 export const getScroller = () => {
     const overlay = createContainer("overlay");
-
-    const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    image.setAttributeNS(null, "height", "100%");
-    image.setAttributeNS(null, "width", "100%");
-    image.setAttributeNS(null, "height", "100%");
-
     const shadow = createContainer("shadow");
     const draggable = createDraggable();
     const leftTouch = createContainer();
@@ -125,5 +110,5 @@ export const getScroller = () => {
     overlay.append(draggable);
     overlay.append(createContainer("shadow"));
 
-    return new Scroller(overlay, shadow, draggable, leftTouch, rightTouch);
+    return new Scroller(overlay, shadow, draggable, getWidthController(overlay), leftTouch, rightTouch);
 };

@@ -24,14 +24,12 @@ export const getRecords = ({ columns, times, labels, colors }) =>
         {}
     );
 
-export const getTimes = times => times.slice().sort();
-
 export const getList = ({ columns, labels, colors }) =>
-    columns.map((v, i) => ({ label: labels[i], color: colors[i], values: v }));
+    columns.map((values, i) => ({ label: labels[i], color: colors[i], values }));
 
 const loadData = state => {
     const data = mapColumns(state),
-        times = getTimes(data.times);
+        times = data.times.sort();
 
     return {
         times,

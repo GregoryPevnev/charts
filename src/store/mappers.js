@@ -46,10 +46,7 @@ export const createRecordGetter = store => () => {
 };
 
 export const createMaxGetter = store => getMaxFinder(store);
-// TODO: Make partial / Curry funciton if possible
 export const createRangeLoader = store => mapItems(store, false);
 export const createFullLoader = store => mapItems(store, true);
-
 export const createDatesLoader = store => () => store.state().times.map(formatDate);
-// TODO: Pre-Compute with loaders if possible
 export const createPositionsLoader = store => () => store.state().positions;
