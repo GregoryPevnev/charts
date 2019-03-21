@@ -6,13 +6,15 @@ import { distinct } from "../services/utils";
 const LABELS_PER_SCREEN = 6;
 const EXTRA = 5;
 const LABEL = 40;
+const MAXIMUM = 100;
 
 class Labels {
     getVisibility(relation) {
-        const STEP = 100 / LABELS_PER_SCREEN / relation;
+        const STEP = MAXIMUM / LABELS_PER_SCREEN / relation;
 
         const filtered = [];
-        for (let i = 0; i <= 101; i += STEP) filtered.push(Math.floor(Math.min(i / 100, 1) * this.dates.length));
+        for (let i = 0; i <= MAXIMUM; i += STEP)
+            filtered.push(Math.floor(Math.min(i / MAXIMUM, 1) * this.dates.length));
 
         return distinct(filtered);
     }
