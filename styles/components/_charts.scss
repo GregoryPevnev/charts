@@ -25,21 +25,22 @@
     }
 }
 
-.date {
-    opacity: 0;
-
-    &--active {
-        transition: opacity 0.2s ease-in-out;
-        opacity: 1;
-    }
-}
-
 .label {
     fill: $primary;
     font-size: 1.3rem;
 
     .night & {
         fill: $night-primary;
+    }
+}
+
+.date {
+    transform: translateX(-20px); // Half of labels' width -> Centers and positions labels properly
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+
+    &--active {
+        opacity: 1;
     }
 }
 

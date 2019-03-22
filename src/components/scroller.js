@@ -46,10 +46,11 @@ class Scroller {
     }
 
     initialize() {
-        this.bar.addEventListener("mousemove", e => this.handleMove(e.x));
         this.bar.addEventListener("mousedown", e => this.handleDown(e.target, e.x));
-        this.bar.addEventListener("mouseup", this.ended.bind(this));
-        this.bar.addEventListener("mouseleave", this.ended.bind(this));
+
+        // Using Window-Events for better responsiviness and scrolling
+        window.addEventListener("mousemove", e => this.handleMove(e.x - this.frame.getStart()));
+        window.addEventListener("mouseup", this.ended.bind(this));
 
         // Mobile Support
         this.bar.addEventListener("touchmove", e => this.handleMove(e.touches[0].clientX));

@@ -1,18 +1,15 @@
 import { createGroup, createLabel } from "./common";
-import { Positioner } from "../services/positioning";
 import { distinct } from "../services/utils";
 
 const LABELS_PER_SCREEN = 6;
-const EXTRA = 5;
-const LABEL = 40;
-const MAXIMUM = 100;
 
 class Labels {
     getVisibility(relation) {
-        const STEP = MAXIMUM / LABELS_PER_SCREEN / relation;
+        // Using percentage for positioning
+        const STEP = 100 / LABELS_PER_SCREEN / relation;
 
         const filtered = [];
-        for (let i = 0; i <= MAXIMUM; i += STEP) filtered.push(Math.ceil((i / MAXIMUM) * this.dates.length));
+        for (let i = 0; i <= 100; i += STEP) filtered.push(Math.round((i / 100) * this.dates.length));
 
         return distinct(filtered);
     }
@@ -25,22 +22,24 @@ class Labels {
 
     setVisibility(visualWidth, totalWidth) {
         const relation = Math.floor(totalWidth / visualWidth);
+        const offset = Math.ceil(this.dates.length / 30);
         const visible = this.getVisibility(relation);
-        const positioner = new Positioner(totalWidth, visible.length, LABEL);
 
-        this.dates.forEach((label, i) => {
-            if (visible.indexOf(i) !== -1) {
-                label.classList.add("date--active");
-                label.setAttributeNS(null, "x", positioner.getNextPosition());
-            } else label.classList.remove("date--active");
+        console.log(offset);
+
+        this.dates.slice(offset, this.dates.length - 1).forEach((label, i) => {
+            if (visible.indexOf(i) !== -1) label.classList.add("date--active");
+            else label.classList.remove("date--active");
         });
     }
 
     setDates(dates) {
-        this.dates = dates.map(date => {
+        const STEP = 100 / (dates.length - 1);
+        this.dates = dates.map((date, i) => {
             const label = createLabel(0, this.at);
             label.textContent = date;
-            label.classList.add("date");
+            label.classList.add("date"); // Label cannot be stylized and animated by the same class eith group
+            label.setAttributeNS(null, "x", STEP * i + "%");
             this.group.append(label);
             return label;
         });
@@ -51,4 +50,4 @@ class Labels {
     }
 }
 
-export const getLabels = HEIGHT => new Labels(HEIGHT - EXTRA, createGroup("label"));
+export const getLabels = HEIGHT => new Labels(HEIGHT - 5, createGroup("label")); // Additional 5px of offset for hsowing all characters

@@ -86,13 +86,13 @@ export const getDynamicGraph = (HEIGHT, frame, labels, scales, popup) => {
     const graph = createSVG(HEIGHT);
     const charts = createGroup("chart");
     const pointer = createPointer();
-    const shadowFilter = getFilterBuilder()
+    const defs = getFilterBuilder()
         .addShadowFilter("shadow")
         .getDefinition();
 
+    graph.append(defs);
     cont.append(graph);
     graph.append(charts);
-    graph.append(shadowFilter);
     graph.append(pointer);
 
     labels.render(graph);
