@@ -8,6 +8,10 @@ class WidthController {
         this.elem = element;
     }
 
+    getVisibleWidth() {
+        return this.elem.clientWidth;
+    }
+
     getWidth() {
         return this.width || this.getVisibleWidth();
     }
@@ -20,16 +24,12 @@ class WidthController {
         this.width = this.getVisibleWidth() / relation;
     }
 
-    getVisibleWidth() {
-        return this.elem.getBoundingClientRect().width;
-    }
-
     getStart() {
-        return this.elem.getBoundingClientRect().left;
+        return this.elem.offsetLeft;
     }
 
     getOffset() {
-        return this.elem.scrollLeft - this.elem.getBoundingClientRect().left;
+        return this.elem.scrollLeft - this.getStart();
     }
 
     getStaticPosition(x) {

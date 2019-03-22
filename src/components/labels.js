@@ -25,8 +25,6 @@ class Labels {
         const offset = Math.ceil(this.dates.length / 30);
         const visible = this.getVisibility(relation);
 
-        console.log(offset);
-
         this.dates.slice(offset, this.dates.length - 1).forEach((label, i) => {
             if (visible.indexOf(i) !== -1) label.classList.add("date--active");
             else label.classList.remove("date--active");
