@@ -32,8 +32,7 @@ const stores = chartData.map((data, i) => {
 
 const render = () => stores.forEach(state => state.mutate());
 
-switchBtn.render(app);
-
 window.onresize = render;
 
 render();
+switchBtn.render(app);
