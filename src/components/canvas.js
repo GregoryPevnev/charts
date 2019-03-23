@@ -7,7 +7,7 @@ class Canvas {
     getPoint({ value, at }) {
         return {
             x: this.width * at,
-            y: this.height * (value === -1 ? -1 : 1 - value) // -50% -> Off-screen
+            y: this.height * (value === -1 ? -0.5 : 1 - value) // -50% -> Off-screen
         };
     }
 

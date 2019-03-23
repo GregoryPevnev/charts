@@ -33,7 +33,7 @@ class Chart {
         this.state.setAttributeNS(null, "to", yPoints);
         this.state.beginElement();
 
-        this.timer = setTimeout(() => this.chart.setAttributeNS(null, "points", yPoints), this.duration - 10); // 10ms - Additional time-gap
+        this.timer = setTimeout(() => this.chart.setAttributeNS(null, "points", yPoints), this.duration - 50); // 50ms - Making sure element is deleted on time
 
         this.values = values;
     }
